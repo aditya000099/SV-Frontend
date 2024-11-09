@@ -20,7 +20,7 @@ export function Account() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:5000/api/users/profile`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/users/profile`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setProfile(response.data);
@@ -38,7 +38,7 @@ export function Account() {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `http://localhost:5000/api/users/profile`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/users/profile`,
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );

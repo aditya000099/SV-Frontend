@@ -38,7 +38,7 @@ export function ChatRoom() {
         setIsLoading(true);
         const token = localStorage.getItem("token");
         const messagesRes = await axios.get(
-          `http://localhost:5000/api/chatrooms/${id}/messages`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/chatrooms/${id}/messages`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -116,7 +116,7 @@ export function ChatRoom() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `http://localhost:5000/api/chatrooms/${id}/messages`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/chatrooms/${id}/messages`,
         { text: newMessage },
         { headers: { Authorization: `Bearer ${token}` } }
       );
