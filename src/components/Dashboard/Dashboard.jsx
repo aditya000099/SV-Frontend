@@ -97,7 +97,8 @@ export function Dashboard() {
     >
       {/* Top Image */}
       <img
-        src="/img.png" // Replace with the actual path to your image
+        // src="/img.png" // Replace with the actual path to your image
+        src={room.image} // Replace with the actual path to your image
         alt={`${room.name} cover`}
         className="w-full object-cover rounded-t-lg mb-4"
       />
