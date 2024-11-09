@@ -1,7 +1,7 @@
 import axios from 'axios';
 const API_CONFIG = {
   baseURL: process.env.NODE_ENV === 'production' 
-    ? 'https://your-production-url.com/api'
+    ? 'https://svback.onrender.com/api'
     : 'http://localhost:5000/api',
   timeout: 10000,
   headers: {
