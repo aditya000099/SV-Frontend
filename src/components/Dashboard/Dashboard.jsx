@@ -15,7 +15,7 @@ export function Dashboard() {
 
   const fetchChatRooms = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/chatrooms');
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/chatrooms`);
       setChatRooms(response.data);
     } catch (error) {
       console.error('Failed to fetch chatrooms:', error);
@@ -25,7 +25,7 @@ export function Dashboard() {
   const handleCreateRoom = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/chatrooms', 
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/chatrooms`, 
         { name: roomName },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -36,6 +36,7 @@ export function Dashboard() {
       console.error('Failed to create room:', error);
     }
   };
+  
 
   return (
     <div className="container mx-auto px-4 py-8 mt-20">
