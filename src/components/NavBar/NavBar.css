@@ -1,0 +1,15 @@
+.nav-bar {
+    background-color: transparent !important;
+    /* padding: 15px !important; */
+    font-size: 18px !important;
+}
+
+.nav-brand {
+    font-size: 21.5px !important;
+    font-weight: 600 !important;
+}
+
+.logo-image {
+    width: 45px !important;
+    margin-right: 8px !important;
+}
