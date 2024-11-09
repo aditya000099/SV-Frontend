@@ -9,11 +9,11 @@ function NavBar() {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="fixed top-0 w-full backdrop-blur-md bg-background-light/75 dark:bg-background-dark/75 text-text-light dark:text-text-dark p-2 border-accent-light/20 dark:border-accent-dark/20 z-50 shadow-sm">
+    <nav className="fixed border-b border-zinc-900 top-0 w-full backdrop-blur-md bg-background-light/75 dark:bg-background-dark/75 text-text-light dark:text-text-dark p-2 border-accent-light/20 dark:border-accent-dark/20 z-50 shadow-sm">
       <div className="container mx-auto px-4">
         <NavigationMenu.Root className="relative flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link to="/" className="text-xl font-bold">
+            <Link to="/" className="text-2xl text-zinc-200 font-extrabold">
               StudyVerse
             </Link>
             
@@ -43,7 +43,7 @@ function NavBar() {
                     src={user.profilePicture || '/default-avatar.png'}
                     className="w-8 h-8 rounded-full"
                   />
-                  <Avatar.Fallback className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+                  <Avatar.Fallback className="w-8 h-8 rounded-full bg-[#5e41de5c] flex items-center justify-center">
                     {user.name[0]}
                   </Avatar.Fallback>
                   <span className="text-gray-300">{user.name}</span>

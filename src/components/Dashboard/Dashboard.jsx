@@ -69,15 +69,16 @@ export function Dashboard() {
               placeholder="Enter room name..."
             />
             <div className="flex justify-end gap-2">
+              
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-600 text-white rounded"
+                className="button px-3 hover:bg-[#de41414d] py-1  flex justify-center items-center rounded-xl bg-[#de414133]"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateRoom}
-                className="button px-3 hover:bg-[#5e41de4d] py-1 flex justify-center items-center rounded-2xl bg-[#5e41de33]"
+                className="button px-3 hover:bg-[#5e41de4d]  flex justify-center items-center rounded-xl bg-[#5e41de33]"
               >
                 Create
               </button>
@@ -87,26 +88,47 @@ export function Dashboard() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {chatRooms.map((room) => (
-          <Link
-            key={room._id}
-            to={`/chatroom/${room._id}`}
-            className="block p-6 bg-gray-900 rounded-lg backdrop-blur-lg bg-opacity-50 
-                     hover:bg-opacity-70 transition-all duration-300"
-          >
-            <h3 className="text-xl font-semibold mb-2 text-white">{room.name}</h3>
-            <p className="text-gray-400 mb-4">Created by: {room.creator.name}</p>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500">
-                {room.participants.length} participants
-              </span>
-              <span className="inline-block px-3 py-1 bg-primary-500 rounded-full text-sm text-white">
-                Join Room
-              </span>
-            </div>
-          </Link>
-        ))}
+  {chatRooms.map((room) => (
+    <Link
+      key={room._id}
+      to={`/chatroom/${room._id}`}
+      className="relative block p-2 bg-gray-900 rounded-lg backdrop-blur-lg bg-opacity-50 
+                 hover:bg-opacity-70 transition-all duration-300"
+    >
+      {/* Top Image */}
+      <img
+        src="/img.png" // Replace with the actual path to your image
+        alt={`${room.name} cover`}
+        className="w-full object-cover rounded-t-lg mb-4"
+      />
+
+      {/* Room Name with Gradient */}
+      <div className="relative">
+        <h3 className="text-xl font-semibold mb-2 text-white z-10 relative">
+          {room.name}
+        </h3>
+        <div
+          className="absolute top-0 left-0 w-full h-full rounded-t-lg opacity-30"
+          style={{
+            background:
+              "linear-gradient(90deg, rgba(128,0,128,0.5), rgba(32,0,32,0.3))",
+          }}
+        ></div>
       </div>
+
+      <p className="text-gray-400 mb-4">Created by: {room.creator.name}</p>
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-gray-500">
+          {room.participants.length} participants
+        </span>
+        <span className="inline-block px-3 py-1 bg-primary-500 rounded-full text-sm text-white">
+          Join Room
+        </span>
+      </div>
+    </Link>
+  ))}
+</div>
+
     </div>
   );
 }

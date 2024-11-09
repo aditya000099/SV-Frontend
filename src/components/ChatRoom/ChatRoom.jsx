@@ -160,51 +160,59 @@ export function ChatRoom() {
   }
 
   return (
-    <div className="flex h-screen bg-black fixed w-full">
-      <div className="w-64 bg-zinc-900 my-20 mx-3 rounded-2xl p-4">
-        <h3 className="text-xl font-bold mb-4 mt-2">Participants</h3>
-        <div className="space-y-2">
-          {participants.map((participant) => (
-            <HoverCard.Root key={participant._id}>
-              <HoverCard.Trigger className="block">
-                <div className="flex items-center space-x-2 p-2 rounded hover:bg-gray-800">
-                  <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center">
-                    {participant.name?.[0]?.toUpperCase() || "?"}
-                  </div>
-                  <span className="text-white">{participant.name}</span>
-                </div>
-              </HoverCard.Trigger>
-              <HoverCard.Content className="p-4 bg-gray-800 rounded-lg shadow-lg z-50">
-                <div className="space-y-2">
-                  <div className="text-white">
-                    <p className="font-bold">{participant.name}</p>
-                    <p className="text-sm text-gray-400">{participant.email}</p>
-                    {participant.bio && (
-                      <p className="text-sm mt-1">{participant.bio}</p>
-                    )}
-                  </div>
-                  {participant._id !== user?._id && (
-                    <button
-                      onClick={() => initiateVideoCall(participant._id)}
-                      className="w-full px-3 py-2 bg-primary-500 hover:bg-primary-600 rounded flex items-center justify-center gap-2"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm12.553 1.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
-                      </svg>
-                      Video Call
-                    </button>
-                  )}
-                </div>
-              </HoverCard.Content>
-            </HoverCard.Root>
-          ))}
-        </div>
-      </div>
+    <div className="flex h-screen bg-black sm:fixed w-full">
+      <div className="relative top-2 w-64 bg-zinc-800 backdrop-blur-lg bg-opacity-50 
+                hover:bg-opacity-40 transition-all duration-300 my-20 mx-3 rounded-2xl p-4">
+  
+  {/* Gradient Balls */}
+  <div className="absolute top-4 left-8 w-16 h-16 bg-purple-500 rounded-full opacity-30 blur-xl"></div>
+  <div className="absolute bottom-8 right-4 w-12 h-12 bg-yellow-400 rounded-full opacity-20 blur-lg"></div>
+  <div className="absolute top-1/2 left-1/3 w-10 h-10 bg-green-400 rounded-full opacity-20 blur-lg"></div>
+
+  <h3 className="text-xl font-bold mb-4 mt-2">Participants</h3>
+  <div className="space-y-2">
+    {participants.map((participant) => (
+      <HoverCard.Root key={participant._id}>
+        <HoverCard.Trigger className="block">
+          <div className="flex items-center space-x-2 p-2 rounded hover:bg-gray-800">
+            <div className="w-8 h-8 rounded-full bg-[#5e41de33] flex items-center justify-center">
+              {participant.name?.[0]?.toUpperCase() || "?"}
+            </div>
+            <span className="text-white">{participant.name}</span>
+          </div>
+        </HoverCard.Trigger>
+        <HoverCard.Content className="p-4 bg-gray-800 rounded-lg shadow-lg z-50">
+          <div className="space-y-2">
+            <div className="text-white">
+              <p className="font-bold">{participant.name}</p>
+              <p className="text-sm text-gray-400">{participant.email}</p>
+              {participant.bio && (
+                <p className="text-sm mt-1">{participant.bio}</p>
+              )}
+            </div>
+            {participant._id !== user?._id && (
+              <button
+                onClick={() => initiateVideoCall(participant._id)}
+                className="w-full px-3 py-2 bg-primary-500 hover:bg-primary-600 rounded flex items-center justify-center gap-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm12.553 1.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                </svg>
+                Video Call
+              </button>
+            )}
+          </div>
+        </HoverCard.Content>
+      </HoverCard.Root>
+    ))}
+  </div>
+</div>
+
       {/* <div className="z-[-50] hidden">
         <Video />
         <FormCard />
@@ -215,14 +223,14 @@ export function ChatRoom() {
           {messages.map((message, index) => {
             const isOwnMessage =
               String(message.sender?._id) === String(user?._id);
-            console.log(
+            {/* console.log(
               "Message sender:",
               message.sender?._id,
               "Current user:",
               user?._id,
               "Is own:",
               isOwnMessage
-            ); // Debug log
+            ); // Debug log */}
 
             return (
               <div
@@ -232,7 +240,7 @@ export function ChatRoom() {
                 } mb-4`}
               >
                 {!isOwnMessage && (
-                  <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center mr-2">
+                  <div className="w-8 h-8 rounded-full bg-[#5e41de33] flex items-center justify-center mr-2">
                     {message.sender?.name?.[0]?.toUpperCase() || "?"}
                   </div>
                 )}
@@ -240,8 +248,8 @@ export function ChatRoom() {
                 <div
                   className={`max-w-[70%] px-2 py-1 rounded-lg ${
                     isOwnMessage
-                      ? "bg-primary-500 text-white"
-                      : "bg-gray-800 text-white"
+                      ? "bg-gray-700 rounded-lg backdrop-blur-lg bg-opacity-50 hover:bg-opacity-70 transition-all duration-300 text-white"
+                      : "bg-gray-800 rounded-lg backdrop-blur-lg bg-opacity-50 hover:bg-opacity-70 transition-all duration-300 text-white"
                   }`}
                 >
                   <p className="text-sm text-gray-300 mb-1">
@@ -256,7 +264,7 @@ export function ChatRoom() {
                 </div>
 
                 {isOwnMessage && (
-                  <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center ml-2">
+                  <div className="w-8 h-8 rounded-full bg-[#5e41de33] flex items-center justify-center ml-2">
                     {message.sender?.name?.[0]?.toUpperCase() || "?"}
                   </div>
                 )}
