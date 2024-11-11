@@ -166,12 +166,12 @@ const HomePage = () => {
             </div>
             <div className="relative">
               <div className="absolute -right-4 top-4 h-48 w-48 rounded-full bg-[#ab88fe]/20 blur-3xl" />
-              <div className="relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 shadow-2xl">
+              <div className="relative overflow-hidden rounded-xl border-zinc-800 bg-zinc-900/50 shadow-2xl">
                 <img
                   width={1000}
                   height={1000}
                   alt="Platform interface"
-                  src="/home.png"
+                  src="/svlogo.png"
                   className="w-full"
                 />
               </div>
