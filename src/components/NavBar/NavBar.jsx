@@ -14,7 +14,8 @@ function NavBar() {
         <NavigationMenu.Root className="relative flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="text-2xl text-zinc-200 font-extrabold">
-              StudyVerse
+              {/* StudyVerse */}
+              <img src="/svlogow.png" className="w-9"></img>
             </Link>
             
             {user && (
