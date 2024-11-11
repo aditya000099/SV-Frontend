@@ -1,6 +1,22 @@
 import React from 'react'
 import { CheckCircle, Code, ArrowRight, Star, Users, Zap } from "lucide-react"
 import BackgroundPlus from '../ui/PlusGrid'
+import { motion } from "framer-motion";
+import Spline from '@splinetool/react-spline';
+
+
+const slap = {
+	initial: {
+		opacity: 0,
+		scale: 1.1,
+	},
+	whileInView: { opacity: 1, scale: 1 },
+	transition: {
+		duration: 0.5,
+		ease: "easeInOut",
+	},
+	viewport: { once: true },
+};
 
 const HomePage = () => {
   return (
@@ -10,21 +26,31 @@ const HomePage = () => {
     <BackgroundPlus />
       <div className="container mx-auto grid min-h-screen items-center gap-12 px-4 py-20 md:grid-cols-2 lg:gap-20">
         <div className="relative z-10 flex flex-col gap-6">
-          <div className="flex items-center gap-2 text-sm text-[#ab88fe]">
+          <motion.div
+					{...{
+						...slap,
+						transition: { ...slap.transition, delay: 0.2 },
+					}} className="flex items-center gap-2 text-sm text-[#ab88fe]">
             <Star className="h-4 w-4" />
             <span>Trusted by 10,000+ learners</span>
-          </div>
-          <h1 className="font-poppins mx-auto bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,_255,_255,_0.00)_202.08%)]  bg-clip-text text-4xl tracking-tighter  sm:text-5xl text-transparent md:text-6xl lg:text-7xl">
+          </motion.div>
+          <motion.h1
+					{...{
+						...slap,
+						transition: { ...slap.transition, delay: 0.2 },
+					}} className="font-poppins mx-auto bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,_255,_255,_0.00)_202.08%)]  bg-clip-text text-4xl tracking-tighter  sm:text-5xl text-transparent md:text-6xl lg:text-7xl">
             Your Gateway To,{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r to-purple-200 from-zinc-300">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r to-purple-600 from-zinc-300">
               Endless Learning
             </span>
-          </h1>
-          <p className="text-lg text-zinc-400">
-            Create stunning feedback forms with our developer-first platform.
-            Built for teams who value clean code and exceptional user
-            experience.
-          </p>
+          </motion.h1>
+          <motion.p
+					{...{
+						...slap,
+						transition: { ...slap.transition, delay: 0.2 },
+					}} className="text-lg text-zinc-400">
+            Unlock your full potential with StudyVerse — a dynamic platform that empowers learners to access interactive courses, AI-driven support, and a global community. Start your journey today and transform the way you learn!
+          </motion.p>
           <div className="flex flex-wrap gap-4">
             <button size="lg" className="bg-[#ab88fe] hover:bg-[#8255ff] px-2 py-2 rounded-xl">
               Start Building
@@ -48,24 +74,24 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        <div className="relative h-[500px] w-full">
+        <motion.div
+					{...{
+						...slap,
+						transition: { ...slap.transition, delay: 0.2 },
+					}} className="relative h-[500px] w-full">
           <div className="absolute -left-8 -top-8 h-72 w-72 rounded-full bg-[#ab88fe]/20 blur-3xl" />
           <div className="absolute -bottom-8 -right-8 h-72 w-72 rounded-full bg-[#8255ff]/20 blur-3xl" />
-          <div className="relative h-full w-full overflow-hidden rounded-xl border-zinc-000 bg-zinc-900/50 shadow-2xl">
-            <img
-              fill
-              alt="Platform preview"
-              src="/home.png"
-              className="object-cover"
-            />
+          <div className="relative h-full w-full overflow-hidden rounded-xl border-zinc-000  ">
+          <Spline scene="https://prod.spline.design/9YaOax3ND6dGm57I/scene.splinecode" />
+ 
             {/* <img
               fill
               alt="Platform preview"
-              src="/home.png"
+              src="/hero1.png"
               className="object-cover"
             /> */}
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
 
@@ -75,18 +101,16 @@ const HomePage = () => {
         <div className="mb-16 grid gap-8 md:grid-cols-2">
           <div>
             <div className="mb-6 inline-block rounded-full bg-zinc-800 px-4 py-1 text-sm text-[#ab88fe]">
-              The Roist Platform
+              The StudyVerse Platform
             </div>
             <h2 className="mb-6 font-quicksand text-4xl font-bold sm:text-5xl">
-              Build your next project with{" "}
+             Begin your next learning journey with{" "}
               <span className="bg-gradient-to-r from-[#8255ff] to-[#ab88fe] bg-clip-text text-transparent">
-                Roist
+                Studyverse
               </span>
             </h2>
             <p className="text-lg text-zinc-400">
-              Experience the perfect blend of power and simplicity. Our
-              platform offers everything you need to create, deploy, and
-              manage feedback forms at scale.
+              Experience the perfect blend of knowledge and innovation. StudyVerse offers everything you need to learn, grow, and connect with a global community of learners, all in one place.
             </p>
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               {[
