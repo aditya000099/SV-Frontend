@@ -75,6 +75,29 @@ const HomePage = () => {
           </div>
         </div>
         <motion.div
+  {...{
+    ...slap,
+    transition: { ...slap.transition, delay: 0.2 },
+  }}
+  className="relative h-[500px] w-full"
+>
+  {/* Decorative Background Circles */}
+  <div className="absolute -left-8 -top-8 h-72 w-72 rounded-full bg-[#ab88fe]/20 blur-3xl" />
+  <div className="absolute -bottom-8 -right-8 h-72 w-72 rounded-full bg-[#8255ff]/20 blur-3xl" />
+
+  {/* Main Content Wrapper */}
+  <div className="relative h-full w-full overflow-hidden rounded-xl border-zinc-000">
+    {/* Bottom Box */}
+    <div className="absolute flex justify-center items-center bottom-0 right-0 w-1/3 h-16 bg-zinc-900 rounded-3xl shadow-xl z-10">
+      <h2 className='font-poppins mx-auto text-2xl text-transparent bg-clip-text bg-gradient-to-r to-purple-300 from-zinc-300'>Study Verse</h2>
+    </div>
+
+    {/* Spline Component */}
+    <Spline scene="https://prod.spline.design/9YaOax3ND6dGm57I/scene.splinecode" />
+  </div>
+</motion.div>
+
+        {/* <motion.div
 					{...{
 						...slap,
 						transition: { ...slap.transition, delay: 0.2 },
@@ -90,8 +113,8 @@ const HomePage = () => {
               src="/hero1.png"
               className="object-cover"
             /> */}
-          </div>
-        </motion.div>
+          {/* </div> */}
+        {/* </motion.div>  */}
       </div>
     </div>
 
