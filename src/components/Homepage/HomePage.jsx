@@ -3,6 +3,7 @@ import { CheckCircle, Code, ArrowRight, Star, Users, Zap } from "lucide-react";
 import BackgroundPlus from "../ui/PlusGrid";
 import { motion } from "framer-motion";
 import Spline from "@splinetool/react-spline";
+import { BackgroundLines } from "@/components/ui/background-lines";
 
 const slap = {
   initial: {
@@ -92,22 +93,24 @@ const HomePage = () => {
             }}
             className="relative h-[500px] w-full"
           >
-            {/* Decorative Background Circles */}
-            <div className="absolute -left-8 -top-8 h-72 w-72 rounded-full bg-[#ab88fe]/20 blur-3xl" />
-            <div className="absolute -bottom-8 -right-8 h-72 w-72 rounded-full bg-[#8255ff]/20 blur-3xl" />
+            <BackgroundLines className="flex items-center justify-center w-full flex-col px-4">
+              {/* Decorative Background Circles */}
+              <div className="absolute -left-8 -top-8 h-72 w-72 rounded-full bg-[#ab88fe]/20 blur-3xl" />
+              <div className="absolute -bottom-8 -right-8 h-72 w-72 rounded-full bg-[#8255ff]/20 blur-3xl" />
 
-            {/* Main Content Wrapper */}
-            <div className="relative h-full w-full overflow-hidden rounded-xl border-zinc-000">
-              {/* Bottom Box */}
-              <div className="absolute flex justify-center items-center bottom-0 right-0 w-1/3 h-14 bg-zinc-900 rounded-3xl shadow-xl z-10">
-                <h2 className="font-poppins mx-auto font-semibold text-2xl text-transparent bg-clip-text bg-gradient-to-r to-purple-300 from-zinc-300">
-                  Studyverse
-                </h2>
+              {/* Main Content Wrapper */}
+              <div className="relative h-full w-full overflow-hidden rounded-xl border-zinc-000">
+                {/* Bottom Box */}
+                <div className="absolute flex justify-center items-center bottom-0 right-0 w-1/3 h-14 bg-zinc-900 rounded-3xl shadow-xl z-10">
+                  <h2 className="font-poppins mx-auto font-semibold text-2xl text-transparent bg-clip-text bg-gradient-to-r to-purple-300 from-zinc-300">
+                    Studyverse
+                  </h2>
+                </div>
+
+                {/* Spline Component */}
+                <Spline scene="https://prod.spline.design/9YaOax3ND6dGm57I/scene.splinecode" />
               </div>
-
-              {/* Spline Component */}
-              <Spline scene="https://prod.spline.design/9YaOax3ND6dGm57I/scene.splinecode" />
-            </div>
+            </BackgroundLines>
           </motion.div>
 
           {/* <motion.div
