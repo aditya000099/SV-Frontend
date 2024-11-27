@@ -1,58 +1,129 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
-import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { validateEmail } from '../../utils/validation';
+import { useAuth } from '../../context/AuthContext';
 
 export function ResetPassword() {
   const [email, setEmail] = useState('');
-  const { resetPassword, loading } = useAuth();
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const { resetPassword } = useAuth();
+
+  const validateForm = () => {
+    const emailError = validateEmail(email);
+    setErrors({ email: emailError });
+    return !emailError;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setSuccess(false);
+
+    if (!validateForm()) {
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       await resetPassword(email);
-      toast.success('Password reset instructions sent to your email');
+      setSuccess(true);
       setEmail('');
     } catch (error) {
-      toast.error(error);
+      setErrors(prev => ({
+        ...prev,
+        submit: 'Failed to send reset email. Please try again.'
+      }));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <h2 className="text-2xl font-semibold text-gray-900">Reset Password</h2>
-          <p className="text-sm text-gray-600">
-            Enter your email address and we'll send you instructions to reset your password.
-          </p>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent>
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="mb-4"
-              required
-            />
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button
-              type="submit"
-              className="w-full bg-gray-900 hover:bg-gray-800"
-              disabled={loading}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="p-8 bg-gray-800 rounded-xl shadow-2xl w-96 backdrop-blur-lg"
+      >
+        <h2 className="text-3xl font-bold mb-2 text-center text-white">Reset Password</h2>
+        <p className="text-gray-400 text-center mb-6">
+          Enter your email address and we'll send you instructions to reset your password.
+        </p>
+
+        <AnimatePresence>
+          {errors.submit && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded-lg mb-4"
             >
-              {loading ? 'Sending...' : 'Reset Password'}
-            </Button>
-          </CardFooter>
+              {errors.submit}
+            </motion.div>
+          )}
+
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="bg-green-500/10 border border-green-500 text-green-500 px-4 py-2 rounded-lg mb-4"
+            >
+              Reset instructions sent! Check your email.
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-200 mb-1">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (errors.email) setErrors({});
+              }}
+              className={`w-full p-3 rounded-lg bg-gray-700 border ${
+                errors.email ? 'border-red-500' : 'border-gray-600'
+              } focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors`}
+              placeholder="Enter your email"
+            />
+            {errors.email && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mt-1 text-sm text-red-500"
+              >
+                {errors.email}
+              </motion.p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors
+              ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {isSubmitting ? 'Sending...' : 'Send Reset Instructions'}
+          </button>
         </form>
-      </Card>
+
+        <div className="mt-6 text-center text-gray-400">
+          Remember your password?{' '}
+          <Link to="/login" className="text-blue-400 hover:text-blue-300 transition-colors">
+            Back to Login
+          </Link>
+        </div>
+      </motion.div>
     </div>
   );
-} 
+}
+
+export default ResetPassword; 

@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import NavBar from './components/NavBar/NavBar';
 import Login from './components/Auth/Login';
 import SignUp from './components/Auth/SignUp';
-// import ResetPassword from './components/Auth/ResetPassword';
+import ResetPassword from './components/Auth/ResetPassword';
 import Dashboard from './components/Dashboard/Dashboard';
 import ChatRoom from './components/ChatRoom/ChatRoom';
 import VideoCall from './components/Video/Video';
@@ -15,6 +15,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import IncomingCall from "./components/IncomingCall/IncomingCall";
 import VideoCallPage from './components/VideoCall/VideoCall';
 import HomePage from './components/Homepage/HomePage';
+import MCQGenerator from 'components/AiMCQ/AiMcq';
 
 function App() {
   return (
@@ -28,12 +29,20 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
-              {/* <Route path="/reset-password" element={<ResetPassword />} /> */}
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route 
                 path="/dashboard" 
                 element={
                   <ProtectedRoute>
                     <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/questions" 
+                element={
+                  <ProtectedRoute>
+                    <MCQGenerator />
                   </ProtectedRoute>
                 } 
               />

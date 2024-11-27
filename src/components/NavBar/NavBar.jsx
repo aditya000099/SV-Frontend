@@ -27,6 +27,12 @@ function NavBar() {
                   Dashboard
                 </Link>
                 <Link
+                  to="/questions"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md"
+                >
+                  AI Tests
+                </Link>
+                <Link
                   to="/ai-bot"
                   className="text-gray-300 hover:text-white px-3 py-2 rounded-md"
                 >

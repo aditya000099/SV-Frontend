@@ -6,6 +6,8 @@ import Spline from "@splinetool/react-spline";
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import { StarsBackground } from "@/components/ui/stars-background";
 import { BackgroundBeams } from "@/components/ui/background-beams";
+import FUIFeatureSectionWithCards from "../../CardPatterns/FeaturesCard";
+import BrainWireEffect from "CardPatterns/BrainCard";
 
 const slap = {
   initial: {
@@ -111,7 +113,8 @@ const HomePage = () => {
               </div>
 
               {/* Spline Component */}
-              <Spline scene="https://prod.spline.design/9YaOax3ND6dGm57I/scene.splinecode" />
+              <BrainWireEffect />
+              {/* <Spline scene="https://prod.spline.design/9YaOax3ND6dGm57I/scene.splinecode" /> */}
             </div>
           </motion.div>
 
@@ -142,7 +145,7 @@ const HomePage = () => {
         <div className="container mx-auto px-4 py-24 lg:py-32">
         
           <div className="mb-16 sm:gap-48 grid gap-8 md:grid-cols-2">
-          <BackgroundBeams />
+          {/* <BackgroundBeams /> */}
             <div>
               <div className="mb-6 inline-block rounded-full bg-zinc-800 px-4 py-1 text-sm text-[#ab88fe]">
                 The StudyVerse Platform
@@ -185,12 +188,12 @@ const HomePage = () => {
           </div>
         </div>
         
-        {/* <ShootingStars />
-      <StarsBackground /> */}
+        <ShootingStars />
+      <StarsBackground />
       </div>
 
       {/* Features Grid */}
-      <div className="bg-zinc-900/50 py-24">
+      {/* <div className="bg-zinc-900/50 py-24">
         <div className="container mx-auto px-4">
           <div className="grid gap-8 md:grid-cols-3">
             {[
@@ -221,8 +224,15 @@ const HomePage = () => {
               </div>
             ))}
           </div>
+          <div className="overflow-x-hidden overflow-y-hidden">
+						<div
+							className="absolute left-0 top-[60%] h-32 w-[90%] overflow-x-hidden bg-[rgb(54,157,253)] bg-opacity-20  blur-[337.4px]"
+							style={{ transform: "rotate(-30deg)" }}
+						/>
+					</div>
         </div>
-      </div>
+      </div> */}
+      <FUIFeatureSectionWithCards />
 
       {/* Stats Section */}
       <div className="border-y border-zinc-800 bg-zinc-900/30">
@@ -240,6 +250,7 @@ const HomePage = () => {
             </div>
           ))}
         </div>
+        
       </div>
 
       {/* CTA Section */}

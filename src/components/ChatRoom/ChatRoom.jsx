@@ -161,13 +161,13 @@ export function ChatRoom() {
 
   return (
     <div className="flex h-screen bg-black sm:fixed w-full">
-      <div className="relative top-2 w-64 bg-zinc-800 backdrop-blur-lg bg-opacity-50 
+      <div className="relative top-2 w-64 bg-zinc-800 backdrop-blur-xl bg-opacity-50 
                 hover:bg-opacity-40 transition-all duration-300 my-20 mx-3 rounded-2xl p-4">
   
   {/* Gradient Balls */}
   <div className="absolute top-4 left-8 w-16 h-16 bg-purple-500 rounded-full opacity-30 blur-xl"></div>
-  <div className="absolute bottom-8 right-4 w-12 h-12 bg-yellow-400 rounded-full opacity-20 blur-lg"></div>
-  <div className="absolute top-1/2 left-1/3 w-10 h-10 bg-green-400 rounded-full opacity-20 blur-lg"></div>
+  <div className="absolute bottom-8 right-4 w-12 h-12 bg-yellow-400 rounded-full opacity-20 blur-xl"></div>
+  <div className="absolute top-1/2 left-1/3 w-10 h-10 bg-green-400 rounded-full opacity-20 blur-xl"></div>
 
   <h3 className="text-xl font-bold mb-4 mt-2">Participants</h3>
   <div className="space-y-2">
@@ -181,7 +181,7 @@ export function ChatRoom() {
             <span className="text-white">{participant.name}</span>
           </div>
         </HoverCard.Trigger>
-        <HoverCard.Content className="p-4 bg-gray-800 rounded-lg shadow-lg z-50">
+        <HoverCard.Content className="p-4 bg-gray-800 rounded-xl shadow-xl z-50">
           <div className="space-y-2">
             <div className="text-white">
               <p className="font-bold">{participant.name}</p>
@@ -246,10 +246,10 @@ export function ChatRoom() {
                 )}
 
                 <div
-                  className={`max-w-[70%] px-2 py-1 rounded-lg ${
+                  className={`max-w-[70%] px-2 py-1 rounded-xl ${
                     isOwnMessage
-                      ? "bg-gray-700 rounded-lg backdrop-blur-lg bg-opacity-50 hover:bg-opacity-70 transition-all duration-300 text-white"
-                      : "bg-gray-800 rounded-lg backdrop-blur-lg bg-opacity-50 hover:bg-opacity-70 transition-all duration-300 text-white"
+                      ? "bg-gray-700 rounded-xl backdrop-blur-xl bg-opacity-50 hover:bg-opacity-70 transition-all duration-300 text-white"
+                      : "bg-gray-800 rounded-xl backdrop-blur-xl bg-opacity-50 hover:bg-opacity-70 transition-all duration-300 text-white"
                   }`}
                 >
                   <p className="text-sm text-gray-300 mb-1">

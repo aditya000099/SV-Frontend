@@ -93,7 +93,7 @@ export function Dashboard() {
     <Link
       key={room._id}
       to={`/chatroom/${room._id}`}
-      className="relative block p-2 bg-gray-900 rounded-lg backdrop-blur-lg bg-opacity-50 
+      className="relative block p-2 bg-gray-900 rounded-2xl backdrop-blur-lg bg-opacity-50 
                  hover:bg-opacity-70 transition-all duration-300"
     >
       {/* Top Image */}
@@ -101,21 +101,15 @@ export function Dashboard() {
         // src="/img.png" // Replace with the actual path to your image
         src={room.image} // Replace with the actual path to your image
         alt={`${room.name} cover`}
-        className="w-full object-cover rounded-t-lg mb-4"
+        className="w-full object-cover rounded-t-xl mb-4"
       />
 
       {/* Room Name with Gradient */}
       <div className="relative">
-        <h3 className="text-xl font-semibold mb-2 text-white z-10 relative">
+        <h3 className="text-xl font-semibold mb-2 text-white  relative">
           {room.name}
         </h3>
-        <div
-          className="absolute top-0 left-0 w-full h-full rounded-t-lg opacity-30"
-          style={{
-            background:
-              "linear-gradient(90deg, rgba(128,0,128,0.5), rgba(32,0,32,0.3))",
-          }}
-        ></div>
+        
       </div>
 
       <p className="text-gray-400 mb-4">Created by: {room.creator.name}</p>
