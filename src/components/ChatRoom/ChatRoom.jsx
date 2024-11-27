@@ -174,18 +174,18 @@ export function ChatRoom() {
     {participants.map((participant) => (
       <HoverCard.Root key={participant._id}>
         <HoverCard.Trigger className="block">
-          <div className="flex items-center space-x-2 p-2 rounded hover:bg-gray-800">
+          <div className="flex items-center space-x-2 p-2 rounded hover:bg-zinc-800">
             <div className="w-8 h-8 rounded-full bg-[#5e41de33] flex items-center justify-center">
               {participant.name?.[0]?.toUpperCase() || "?"}
             </div>
             <span className="text-white">{participant.name}</span>
           </div>
         </HoverCard.Trigger>
-        <HoverCard.Content className="p-4 bg-gray-800 rounded-xl shadow-xl z-50">
+        <HoverCard.Content className="p-4 bg-zinc-800 rounded-xl shadow-xl z-50">
           <div className="space-y-2">
             <div className="text-white">
               <p className="font-bold">{participant.name}</p>
-              <p className="text-sm text-gray-400">{participant.email}</p>
+              <p className="text-sm text-zinc-400">{participant.email}</p>
               {participant.bio && (
                 <p className="text-sm mt-1">{participant.bio}</p>
               )}
@@ -218,6 +218,7 @@ export function ChatRoom() {
         <FormCard />
         <IncomingCall />
       </div> */}
+      
       <div className="flex-1 flex flex-col mt-20">
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((message, index) => {

@@ -8,6 +8,7 @@ import { StarsBackground } from "@/components/ui/stars-background";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import FUIFeatureSectionWithCards from "../../CardPatterns/FeaturesCard";
 import BrainWireEffect from "CardPatterns/BrainCard";
+import { Spotlight } from "@/components/ui/spotlight";
 
 const slap = {
   initial: {
@@ -25,6 +26,7 @@ const slap = {
 const HomePage = () => {
   return (
     <div className="bg-zinc-950 text-white">
+    
       {/* Hero Section - Updated */}
       <div className="relative bg-zinc-900/30">
         <BackgroundPlus />
@@ -37,6 +39,7 @@ const HomePage = () => {
               }}
               className="flex items-center gap-2 text-sm text-[#ab88fe]"
             >
+              
               <Star className="h-4 w-4" />
               <span>Trusted by 10,000+ learners</span>
             </motion.div>
@@ -47,8 +50,8 @@ const HomePage = () => {
               }}
               className="font-poppins mx-auto bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,_255,_255,_0.00)_202.08%)]  bg-clip-text text-4xl tracking-tighter  sm:text-5xl text-transparent md:text-6xl lg:text-7xl"
             >
+            
               Your Gateway To,{" "}
-              
               <span className="text-transparent bg-clip-text bg-gradient-to-r to-purple-600 from-zinc-300">
                 Endless Learning
               </span>
@@ -98,7 +101,6 @@ const HomePage = () => {
             }}
             className="relative h-[500px] w-full"
           >
-          
             {/* Decorative Background Circles */}
             <div className="absolute -left-8 -top-8 h-72 w-72 rounded-full bg-[#ab88fe]/20 blur-3xl" />
             <div className="absolute -bottom-8 -right-8 h-72 w-72 rounded-full bg-[#8255ff]/20 blur-3xl" />
@@ -141,11 +143,9 @@ const HomePage = () => {
 
       {/* Features - Updated */}
       <div className="relative border-zinc-800 bg-zinc-900/30">
-      
         <div className="container mx-auto px-4 py-24 lg:py-32">
-        
           <div className="mb-16 sm:gap-48 grid gap-8 md:grid-cols-2">
-          {/* <BackgroundBeams /> */}
+            {/* <BackgroundBeams /> */}
             <div>
               <div className="mb-6 inline-block rounded-full bg-zinc-800 px-4 py-1 text-sm text-[#ab88fe]">
                 The StudyVerse Platform
@@ -187,9 +187,9 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        
+
         <ShootingStars />
-      <StarsBackground />
+        <StarsBackground />
       </div>
 
       {/* Features Grid */}
@@ -250,7 +250,6 @@ const HomePage = () => {
             </div>
           ))}
         </div>
-        
       </div>
 
       {/* CTA Section */}

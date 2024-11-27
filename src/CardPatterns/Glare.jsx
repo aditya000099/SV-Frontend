@@ -86,10 +86,10 @@ export const GlareCard = ({
 				const { background, rotate, glare } = state.current;
 				background.x = 50 + percentage.x / 4 - 12.5;
 				background.y = 50 + percentage.y / 3 - 16.67;
-				rotate.x = -(delta.x / 3.5);
-				rotate.y = delta.y / 2;
-				rotate.x *= rotateFactor;
-				rotate.y *= rotateFactor;
+				// rotate.x = -(delta.x / 3.5);
+				// rotate.y = delta.y / 2;
+				// rotate.x *= rotateFactor;
+				// rotate.y *= rotateFactor;
 				glare.x = percentage.x;
 				glare.y = percentage.y;
 
