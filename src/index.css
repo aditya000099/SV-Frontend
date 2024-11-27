@@ -55,14 +55,55 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
   }
 }
+
+
 
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
+  ::selection {
+    background-color: #f39c12;
+    /* Orange */
+    color: #ffffff;
+    /* White */
+  }
+
+  /* For Firefox, ensure compatibility */
+  *::selection {
+    background-color: #ff8559;
+    color: #f6f6f6;
+  }
+}
+
+/* Add these styles for the heatmap tooltips */
+.tooltip-container {
+  position: relative;
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  background: #333;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip-container:hover .tooltip {
+  display: block;
 }

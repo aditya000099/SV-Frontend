@@ -16,6 +16,7 @@ import IncomingCall from "./components/IncomingCall/IncomingCall";
 import VideoCallPage from './components/VideoCall/VideoCall';
 import HomePage from './components/Homepage/HomePage';
 import MCQGenerator from 'components/AiMCQ/AiMcq';
+import StatsPage from 'components/Stats/StatsPage';
 
 function App() {
   return (
@@ -43,6 +44,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <MCQGenerator />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/stats" 
+                element={
+                  <ProtectedRoute>
+                    <StatsPage />
                   </ProtectedRoute>
                 } 
               />

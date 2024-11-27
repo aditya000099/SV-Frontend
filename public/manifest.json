@@ -1,6 +1,11 @@
 {
+  "manifest_version": 2,
+  "name": "Browser Stats",
+  "version": "1.0",
+  "permissions": [
+    "history"
+  ],
   "short_name": "Video Call",
-  "name": "React Video Call",
   "icons": [
     {
       "src": "favicon.png",

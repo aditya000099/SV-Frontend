@@ -38,6 +38,12 @@ function NavBar() {
                 >
                   AI Bot
                 </Link>
+                <Link
+                  to="/stats"
+                  className="text-gray-300 hover:text-white px-3 py-2 rounded-md"
+                >
+                  Stats
+                </Link>
               </div>
             )}
           </div>

@@ -44,7 +44,7 @@ export function Dashboard() {
   return (
     <div className="container mx-auto px-4 py-8 mt-20">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Study Rooms</h1>
+        <h1 className="font-normal tracking-tighter text-3xl sm:text-5xl md:text-5xl lg:text-6xl text-center text-transparent bg-clip-text bg-gradient-to-tr from-zinc-400/50 to-white/60 via-white">Study Rooms</h1>
 
         <button
           onClick={() => setShowModal(true)}
@@ -119,7 +119,7 @@ export function Dashboard() {
                 {/* Room Name with Gradient */}
                 <div className="px-2">
                   <div className="relative">
-                    <h3 className="text-xl font-semibold mb-2 text-white  relative">
+                    <h3 className="text-xl font-normal tracking-wide  text-transparent bg-clip-text bg-gradient-to-tr from-zinc-400/50 to-white/60 via-white mb-2 text-white  relative">
                       {room.name}
                     </h3>
                   </div>
