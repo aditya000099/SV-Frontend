@@ -4,8 +4,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { validateEmail, validatePassword, validateName } from '../../utils/validation';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 export function SignUp() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  if(user) {
+    navigate('/dashboard');
+  }
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,7 +22,7 @@ export function SignUp() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const validateForm = () => {
     const newErrors = {

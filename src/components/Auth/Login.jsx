@@ -5,6 +5,11 @@ import { validateEmail, validatePassword } from '../../utils/validation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function Login() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  if(user) {
+    navigate('/dashboard');
+  }
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -12,7 +17,7 @@ export function Login() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
-  const navigate = useNavigate();
+  
 
   const validateLoginForm = () => {
     const newErrors = {

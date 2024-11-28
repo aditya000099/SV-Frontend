@@ -26,9 +26,8 @@ const slap = {
 const HomePage = () => {
   return (
     <div className="bg-zinc-950 text-white">
-    
       {/* Hero Section - Updated */}
-      <div className="relative bg-zinc-900/30">
+      <div className="relative bg-zinc-900/30 px-16">
         <BackgroundPlus />
         <div className="container mx-auto grid min-h-screen items-center gap-12 px-4 py-20 md:grid-cols-2 lg:gap-20">
           <div className="relative z-10 flex flex-col gap-6">
@@ -39,7 +38,6 @@ const HomePage = () => {
               }}
               className="flex items-center gap-2 text-sm text-[#ab88fe]"
             >
-              
               <Star className="h-4 w-4" />
               <span>Trusted by 10,000+ learners</span>
             </motion.div>
@@ -50,7 +48,6 @@ const HomePage = () => {
               }}
               className="font-poppins mx-auto bg-[linear-gradient(180deg,_#FFF_0%,_rgba(255,_255,_255,_0.00)_202.08%)]  bg-clip-text text-4xl tracking-tighter  sm:text-5xl text-transparent md:text-6xl lg:text-7xl"
             >
-            
               Your Gateway To,{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r to-purple-600 from-zinc-300">
                 Endless Learning
@@ -99,45 +96,19 @@ const HomePage = () => {
               ...slap,
               transition: { ...slap.transition, delay: 0.2 },
             }}
-            className="relative h-[500px] w-full"
+            className="relative h-[400px] w-full"
           >
             {/* Decorative Background Circles */}
             <div className="absolute -left-8 -top-8 h-72 w-72 rounded-full bg-[#ab88fe]/20 blur-3xl" />
             <div className="absolute -bottom-8 -right-8 h-72 w-72 rounded-full bg-[#8255ff]/20 blur-3xl" />
 
             {/* Main Content Wrapper */}
-            <div className="relative h-full w-full overflow-hidden rounded-xl border-zinc-000">
-              {/* Bottom Box */}
-              <div className="absolute flex justify-center items-center bottom-0 right-0 w-1/3 h-14 bg-zinc-900 rounded-3xl shadow-xl z-10">
-                <h2 className="font-poppins mx-auto font-semibold text-2xl text-transparent bg-clip-text bg-gradient-to-r to-purple-300 from-zinc-300">
-                  Studyverse
-                </h2>
-              </div>
-
+            <div className="h-full w-full overflow-hidden rounded-xl border-zinc-000">
               {/* Spline Component */}
               <BrainWireEffect />
               {/* <Spline scene="https://prod.spline.design/9YaOax3ND6dGm57I/scene.splinecode" /> */}
             </div>
           </motion.div>
-
-          {/* <motion.div
-					{...{
-						...slap,
-						transition: { ...slap.transition, delay: 0.2 },
-					}} className="relative h-[500px] w-full">
-          <div className="absolute -left-8 -top-8 h-72 w-72 rounded-full bg-[#ab88fe]/20 blur-3xl" />
-          <div className="absolute -bottom-8 -right-8 h-72 w-72 rounded-full bg-[#8255ff]/20 blur-3xl" />
-          <div className="relative h-full w-full overflow-hidden rounded-xl border-zinc-000  ">
-          <Spline scene="https://prod.spline.design/9YaOax3ND6dGm57I/scene.splinecode" />
- 
-            {/* <img
-              fill
-              alt="Platform preview"
-              src="/hero1.png"
-              className="object-cover"
-            /> */}
-          {/* </div> */}
-          {/* </motion.div>  */}
         </div>
       </div>
 

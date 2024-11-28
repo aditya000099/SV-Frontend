@@ -1,153 +1,134 @@
 import { motion } from "framer-motion";
-import { useEffect, useId, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 
-export const AnimatedBeam = ({
-	className,
-	containerRef,
-	fromRef,
-	toRef,
-	curvature = 0,
-	reverse = false,
-	duration = Math.random() * 3 + 4,
-	delay = 0,
-	pathColor = "gray",
-	pathWidth = 2,
-	pathOpacity = 0.2,
-	gradientStartColor = "#ffaa40",
-	gradientStopColor = "#9c40ff",
-	startXOffset = 0,
-	startYOffset = 0,
-	endXOffset = 0,
-	endYOffset = 0,
+const AnimatedBeam = ({
+  containerRef,
+  curvature = 0,
+  duration = 3,
+  pathColor = "gray",
+  pathWidth = 2,
+  pathOpacity = 0.2,
+  gradientColors = [
+    { start: "#ffaa40", stop: "#9c40ff" },
+    { start: "#40ffaa", stop: "#ff40aa" },
+    { start: "#aa40ff", stop: "#40aaff" },
+  ],
 }) => {
-	const id = useId();
-	const [pathD, setPathD] = useState("");
-	const [svgDimensions, setSvgDimensions] = useState({ width: 0, height: 0 });
+  const [paths, setPaths] = useState([]);
+  const [svgDimensions, setSvgDimensions] = useState({ width: 500, height: 500 });
 
-	const gradientCoordinates = reverse
-		? {
-				x1: ["90%", "-10%"],
-				x2: ["100%", "0%"],
-				y1: ["0%", "0%"],
-				y2: ["0%", "0%"],
-			}
-		: {
-				x1: ["10%", "110%"],
-				x2: ["0%", "100%"],
-				y1: ["0%", "0%"],
-				y2: ["0%", "0%"],
-			};
+  useEffect(() => {
+    const generateInfinityPath = (centerX, centerY, a, b) => {
+      const pathData = Array.from({ length: 360 }) // Smooth curve with points
+        .map((_, i) => {
+          const t = (i / 360) * 2 * Math.PI;
+          const x = centerX + a * Math.cos(t);
+          const y = centerY + b * Math.sin(2 * t);
+          return `${x},${y}`;
+        })
+        .join(" ");
+      return `M ${pathData}`;
+    };
 
-	useEffect(() => {
-		const updatePath = () => {
-			if (containerRef.current && fromRef.current && toRef.current) {
-				const containerRect = containerRef.current.getBoundingClientRect();
-				const rectA = fromRef.current.getBoundingClientRect();
-				const rectB = toRef.current.getBoundingClientRect();
+    const generatePaths = () => {
+      const { width, height } = svgDimensions;
+      const centerX = width / 2;
+      const centerY = height / 2;
 
-				const svgWidth = containerRect.width;
-				const svgHeight = containerRect.height;
-				setSvgDimensions({ width: svgWidth, height: svgHeight });
+      // Define sizes for three infinity shapes
+      const sizes = [
+        { a: 150, b: 75 }, // Main infinity
+        { a: 130, b: 65 }, // Inner infinity
+        { a: 110, b: 55 }, // Smallest infinity
+      ];
 
-				const startX =
-					rectA.left - containerRect.left + rectA.width / 2 + startXOffset;
-				const startY =
-					rectA.top - containerRect.top + rectA.height / 2 + startYOffset;
-				const endX =
-					rectB.left - containerRect.left + rectB.width / 2 + endXOffset;
-				const endY =
-					rectB.top - containerRect.top + rectB.height / 2 + endYOffset;
+      return sizes.map((size) =>
+        generateInfinityPath(centerX, centerY, size.a*1.75, size.b*1.75)
+      );
+    };
 
-				const controlY = startY - curvature;
-				const d = `M ${startX},${startY} Q ${
-					(startX + endX) / 2
-				},${controlY} ${endX},${endY}`;
-				setPathD(d);
-			}
-		};
+    setPaths(generatePaths());
+  }, [svgDimensions]);
 
-		const resizeObserver = new ResizeObserver(() => {
-			updatePath();
-		});
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(() => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setSvgDimensions({ width: rect.width, height: rect.height });
+      }
+    });
 
-		if (containerRef.current) {
-			resizeObserver.observe(containerRef.current);
-		}
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
 
-		updatePath();
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [containerRef]);
 
-		return () => {
-			resizeObserver.disconnect();
-		};
-	}, [
-		containerRef,
-		fromRef,
-		toRef,
-		curvature,
-		startXOffset,
-		startYOffset,
-		endXOffset,
-		endYOffset,
-	]);
-
-	return (
-		<svg
-			fill="none"
-			width={svgDimensions.width}
-			height={svgDimensions.height}
-			xmlns="http://www.w3.org/2000/svg"
-			className="pointer-events-none absolute left-0 top-0 transform-gpu stroke-2"
-			viewBox={`0 0 ${svgDimensions.width} ${svgDimensions.height}`}
-		>
-			<path
-				d={pathD}
-				stroke={pathColor}
-				strokeWidth={pathWidth}
-				strokeOpacity={pathOpacity}
-				strokeLinecap="round"
-			/>
-			<path
-				d={pathD}
-				strokeWidth={pathWidth}
-				stroke={`url(#${id})`}
-				strokeOpacity="1"
-				strokeLinecap="round"
-			/>
-			<defs>
-				<motion.linearGradient
-					className="transform-gpu"
-					id={id}
-					gradientUnits={"userSpaceOnUse"}
-					initial={{
-						x1: "0%",
-						x2: "0%",
-						y1: "0%",
-						y2: "0%",
-					}}
-					animate={{
-						x1: gradientCoordinates.x1,
-						x2: gradientCoordinates.x2,
-						y1: gradientCoordinates.y1,
-						y2: gradientCoordinates.y2,
-					}}
-					transition={{
-						delay,
-						duration,
-						ease: [0.16, 1, 0.3, 1],
-						repeat: Infinity,
-						repeatDelay: 0,
-					}}
-				>
-					<stop stopColor={gradientStartColor} stopOpacity="0"></stop>
-					<stop stopColor={gradientStartColor}></stop>
-					<stop offset="32.5%" stopColor={gradientStopColor}></stop>
-					<stop
-						offset="100%"
-						stopColor={gradientStopColor}
-						stopOpacity="0"
-					></stop>
-				</motion.linearGradient>
-			</defs>
-		</svg>
-	);
+  return (
+    <svg
+      width={svgDimensions.width}
+      height={svgDimensions.height}
+      xmlns="http://www.w3.org/2000/svg"
+      className="absolute left-0 top-0 pointer-events-none"
+    >
+      {paths.map((pathD, index) => {
+        const gradientId = `gradient-${index}`;
+        return (
+          <g key={index}>
+            <path
+              d={pathD}
+              stroke={pathColor}
+              strokeWidth={pathWidth}
+              strokeOpacity={pathOpacity}
+              fill="none"
+              strokeLinecap="round"
+            />
+            <motion.path
+              d={pathD}
+              stroke={`url(#${gradientId})`}
+              strokeWidth={pathWidth}
+              strokeOpacity="1"
+              fill="none"
+              strokeLinecap="round"
+              initial={{ strokeDasharray: 1000, strokeDashoffset: 1000 }}
+              animate={{ strokeDashoffset: 0 }}
+              transition={{
+                delay: index * 0.5, // Stagger the animations
+                duration: duration + index, // Vary duration for each infinity
+                ease: [0.16, 1, 0.3, 1],
+                repeat: Infinity,
+                repeatDelay: 0,
+              }}
+            />
+            <defs>
+              <linearGradient
+                id={gradientId}
+                gradientUnits="userSpaceOnUse"
+                x1="0%"
+                x2="100%"
+              >
+                <stop
+                  offset="0%"
+                  stopColor={gradientColors[index].start}
+                  stopOpacity="0"
+                ></stop>
+                <stop offset="50%" stopColor={gradientColors[index].start}></stop>
+                <stop offset="75%" stopColor={gradientColors[index].stop}></stop>
+                <stop
+                  offset="100%"
+                  stopColor={gradientColors[index].stop}
+                  stopOpacity="0"
+                ></stop>
+              </linearGradient>
+            </defs>
+          </g>
+        );
+      })}
+    </svg>
+  );
 };
+
+export default AnimatedBeam;
