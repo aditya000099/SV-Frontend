@@ -79,7 +79,7 @@ function NavBar() {
               </Link>
               <Link
                 to="/signup"
-                className="bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700"
+                className="bg-purple-600 text-white px-3 py-2 rounded-xl hover:bg-purple-700"
               >
                 Sign Up
               </Link>

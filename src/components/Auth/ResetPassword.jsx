@@ -89,7 +89,7 @@ export function ResetPassword() {
                 setEmail(e.target.value);
                 if (errors.email) setErrors({});
               }}
-              className={`w-full p-3 rounded-lg bg-gray-700 border ${
+              className={`w-full p-2 rounded-xl bg-gray-700 border-1 ${
                 errors.email ? 'border-red-500' : 'border-gray-600'
               } focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors`}
               placeholder="Enter your email"
@@ -108,7 +108,7 @@ export function ResetPassword() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium transition-colors
+            className={`w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-xl text-white font-medium transition-colors
               ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {isSubmitting ? 'Sending...' : 'Send Reset Instructions'}

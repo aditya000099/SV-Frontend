@@ -12,6 +12,7 @@ export function Dashboard() {
   const [error, setError] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
   const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
 
   // Initialize Appwrite Client
   const client = new Client();
@@ -27,12 +28,15 @@ export function Dashboard() {
 
   const fetchChatRooms = async () => {
     try {
+      setIsLoading(true);
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/api/chatrooms`
       );
       setChatRooms(response.data);
     } catch (error) {
       console.error("Failed to fetch chatrooms:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -174,6 +178,22 @@ export function Dashboard() {
     };
   };
 
+  const LoadingSkeleton = () => (
+    <div className="relative block p-2 bg-slate-950 rounded-2xl backdrop-blur-lg bg-opacity-50 hover:bg-opacity-70 transition-all duration-300">
+      <div className="animate-pulse">
+        <div className="w-full h-48 bg-gray-700 rounded-xl mb-4"></div>
+        <div className="px-2">
+          <div className="h-6 bg-gray-700 rounded w-3/4 mb-2"></div>
+          <div className="h-4 bg-gray-700 rounded w-1/2 mb-4"></div>
+          <div className="flex items-center justify-between">
+            <div className="h-4 bg-gray-700 rounded w-1/4"></div>
+            <div className="h-4 bg-gray-700 rounded w-1/4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="container mx-auto px-4 py-8 mt-20">
       <div className="flex justify-between items-center mb-8">
@@ -230,33 +250,41 @@ export function Dashboard() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {chatRooms.map((room) => (
-          <Link key={room._id} to={`/chatroom/${room._id}`}>
-            <GlareCard>
-              <div className="relative block p-2 bg-slate-950 rounded-2xl backdrop-blur-lg bg-opacity-50 hover:bg-opacity-70 transition-all duration-300">
-                <img
-                  src={room.image}
-                  alt={`${room.name} cover`}
-                  className="w-full object-cover rounded-xl mb-4"
-                />
-                <div className="px-2">
-                  <h3 className="text-xl font-normal tracking-wide text-transparent bg-clip-text bg-gradient-to-tr from-zinc-400/50 to-white/60 via-white mb-2">
-                    {room.name}
-                  </h3>
-                  <p className="text-gray-400 mb-4">Created by: {room.creator.name}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">
-                      {room.participants.length} participants
-                    </span>
-                    <span className="inline-block px-3 py-1 bg-primary-500 rounded-full text-sm text-white">
-                      Join Room
-                    </span>
+        {isLoading
+          ? Array(6)
+              .fill(null)
+              .map((_, index) => (
+                <GlareCard key={`skeleton-${index}`}>
+                  <LoadingSkeleton />
+                </GlareCard>
+              ))
+          : chatRooms.map((room) => (
+              <Link key={room._id} to={`/chatroom/${room._id}`}>
+                <GlareCard>
+                  <div className="relative block p-2 bg-slate-950 rounded-2xl backdrop-blur-lg bg-opacity-50 hover:bg-opacity-70 transition-all duration-300">
+                    <img
+                      src={room.image}
+                      alt={`${room.name} cover`}
+                      className="w-full object-cover rounded-xl mb-4"
+                    />
+                    <div className="px-2">
+                      <h3 className="text-xl font-normal tracking-wide text-transparent bg-clip-text bg-gradient-to-tr from-zinc-400/50 to-white/60 via-white mb-2">
+                        {room.name}
+                      </h3>
+                      <p className="text-gray-400 mb-4">Created by: {room.creator.name}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-500">
+                          {room.participants.length} participants
+                        </span>
+                        <span className="inline-block px-3 py-1 bg-primary-500 rounded-full text-sm text-white">
+                          Join Room
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </GlareCard>
-          </Link>
-        ))}
+                </GlareCard>
+              </Link>
+            ))}
       </div>
     </div>
   );
