@@ -43,7 +43,7 @@ const AnimatedBeam = ({
       ];
 
       return sizes.map((size) =>
-        generateInfinityPath(centerX, centerY, size.a*1.75, size.b*1.75)
+        generateInfinityPath(centerX, centerY, size.a*1.80, size.b*1.80)
       );
     };
 

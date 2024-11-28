@@ -42,7 +42,7 @@ function BrainWireEffect() {
     gradientStartColor="#ffaa40"
     gradientStopColor="#9c40ff"
   />
-  <div className="absolute ml-8 mt-2 z-10 flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-r from-zinc-500/30 to-purple-500/30 backdrop-blur-sm top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+  <div className="absolute sm:ml-8 sm:mt-3 z-10 flex items-center justify-center w-24 h-24 rounded-full bg-gradient-to-r from-zinc-500/30 to-purple-500/30 backdrop-blur-sm top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
     <div className="absolute w-20 h-20 rounded-full bg-zinc-900/10 animate-pulse" />
     <img
       src="./svlogo.png"

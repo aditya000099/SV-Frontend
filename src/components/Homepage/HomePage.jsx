@@ -9,6 +9,7 @@ import { BackgroundBeams } from "@/components/ui/background-beams";
 import FUIFeatureSectionWithCards from "../../CardPatterns/FeaturesCard";
 import BrainWireEffect from "CardPatterns/BrainCard";
 import { Spotlight } from "@/components/ui/spotlight";
+import { Link } from "react-router-dom";
 
 const slap = {
   initial: {
@@ -233,9 +234,11 @@ const HomePage = () => {
             Join thousands of learners who are already learning more efficiently
             with Studyverse.
           </p>
-          <button size="lg" className="bg-[#ab88fe] hover:bg-[#8255ff]">
-            Start Learning <ArrowRight className="ml-2 h-4 w-4" />
+          <Link to="/dashboard">
+            <button size="xl" className="bg-[#ab88fe] hover:bg-[#8255ff] inline-flex justify-center items-center px-2 py-2 rounded-xl">
+              Start Learning <ArrowRight className="ml-2 h-4 w-4" />
           </button>
+          </Link>
         </div>
         <div className="absolute bottom-0 right-0 h-[320px] w-[320px] rounded-full bg-gradient-to-b from-[rgba(100,101,240,0.5)] to-[rgba(136,70,200,0.5)] blur-[100px]" />
       </div>

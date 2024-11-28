@@ -18,7 +18,7 @@ export default function MCQGenerator() {
     try {
       setInitial(false);
       setLoading(true);
-      const response = await axios.post("http://localhost:5000/api/mcqs", {
+      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/mcqs`, {
         subject,
         subtopic,
       });
