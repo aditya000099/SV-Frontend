@@ -67,19 +67,23 @@ const HomePage = () => {
               transform the way you learn!
             </motion.p>
             <div className="flex flex-wrap gap-4">
+            <Link to="/login">
               <button
                 size="lg"
                 className="bg-[#ab88fe] hover:bg-[#8255ff] px-2 py-2 rounded-xl"
               >
                 Start Building
               </button>
+              </Link>
+              {/* <Link to="/dashboard">
               <button
                 size="lg"
                 variant="outline"
                 className="border-zinc-700 bg-zinc-900/50 hover:bg-zinc-800"
               >
                 View Documentation
-              </button>
+              </button> */}
+              {/* </Link> */}
             </div>
             <div className="mt-4 flex items-center gap-6 text-sm text-zinc-500">
               <div className="flex items-center gap-2">
