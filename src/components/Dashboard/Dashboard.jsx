@@ -93,8 +93,8 @@ export function Dashboard() {
   
           // Set font styles
           const words = roomName.split(" ");
-          let fontSize = 240;
-          if (roomName.length > 8) fontSize = 200;
+          let fontSize = 24;
+          if (roomName.length > 8) fontSize = 20;
   
           ctx.font = `900 ${fontSize}rem 'Poppins'`;
           ctx.fillStyle = "white";
