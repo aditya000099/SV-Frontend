@@ -56,7 +56,6 @@ export function Login() {
       setIsSubmitting(false);
       return;
     }
-
     try {
       await login(formData.email, formData.password);
       window.location.href = "/dashboard";

@@ -1,8 +1,8 @@
 import React from "react";
-import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import * as NavigationMenu from '@radix-ui/react-navigation-menu';
-import * as Avatar from '@radix-ui/react-avatar';
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import * as NavigationMenu from "@radix-ui/react-navigation-menu";
+import * as Avatar from "@radix-ui/react-avatar";
 import "./NavBar.css";
 
 function NavBar() {
@@ -17,7 +17,7 @@ function NavBar() {
               {/* StudyVerse */}
               <img src="/svlogow.png" className="w-9"></img>
             </Link>
-            
+
             {user && (
               <div className="ml-8 flex space-x-4">
                 <Link
@@ -30,13 +30,13 @@ function NavBar() {
                   to="/questions"
                   className="text-gray-300 hover:text-white px-3 py-2 rounded-md"
                 >
-                  AI Tests
+                  Tests
                 </Link>
                 <Link
                   to="/ai-bot"
                   className="text-gray-300 hover:text-white px-3 py-2 rounded-md"
                 >
-                  AI Bot
+                  Goals
                 </Link>
                 <Link
                   to="/stats"
@@ -53,7 +53,7 @@ function NavBar() {
               <Link to="/account">
                 <Avatar.Root className="flex items-center space-x-2">
                   <Avatar.Image
-                    src={user.profilePicture || '/default-avatar.png'}
+                    src={user.profilePicture || "/default-avatar.png"}
                     className="w-8 h-8 rounded-full"
                   />
                   <Avatar.Fallback className="w-8 h-8 rounded-full bg-[#5e41de5c] flex items-center justify-center">
