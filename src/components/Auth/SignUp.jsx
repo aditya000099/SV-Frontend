@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -29,11 +29,47 @@ export function SignUp() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   // const navigate = useNavigate();
 
+  const validateNameInput = (name) => {
+    // Check for numbers
+    if (/\d/.test(name)) {
+      return "Name cannot contain numbers";
+    }
+    
+    // Check length
+    if (name.length > 16) {
+      return "Name cannot exceed 16 characters";
+    }
+
+    // Check for consecutive spaces
+    if (/\s\s/.test(name)) {
+      return "Name cannot contain consecutive spaces";
+    }
+
+    // Check for leading/trailing spaces
+    if (name.startsWith(' ') || name.endsWith(' ')) {
+      return "Name cannot start or end with spaces";
+    }
+
+    // Allow letters and single spaces between words
+    if (!/^[A-Za-z]+(?:\s[A-Za-z]+)*$/.test(name)) {
+      return "Name can only contain letters and spaces between words";
+    }
+
+    return "";
+  };
+
+  const validatePasswordInput = (password) => {
+    if (/\s/.test(password)) {
+      return "Password cannot contain spaces";
+    }
+    return validatePassword(password); // Your existing password validation
+  };
+
   const validateForm = () => {
     const newErrors = {
-      name: validateName(formData.name),
+      name: validateNameInput(formData.name),
       email: validateEmail(formData.email),
-      password: validatePassword(formData.password),
+      password: validatePasswordInput(formData.password),
       confirmPassword:
         formData.password !== formData.confirmPassword
           ? "Passwords do not match"
@@ -49,12 +85,28 @@ export function SignUp() {
       ...prev,
       [name]: value,
     }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({
+
+    // Real-time validation for name and password
+    if (name === 'name') {
+      const nameError = validateNameInput(value);
+      setErrors(prev => ({
         ...prev,
-        [name]: "",
+        name: nameError
       }));
+    } else if (name === 'password') {
+      const passwordError = validatePasswordInput(value);
+      setErrors(prev => ({
+        ...prev,
+        password: passwordError
+      }));
+    } else {
+      // Clear error when user starts typing for other fields
+      if (errors[name]) {
+        setErrors((prev) => ({
+          ...prev,
+          [name]: "",
+        }));
+      }
     }
   };
 
@@ -100,6 +152,18 @@ export function SignUp() {
     "--easing": "ease",
     "--transition": "var(--duration) var(--easing)",
   };
+
+  // Add this effect to handle real-time password match validation
+  useEffect(() => {
+    if (formData.confirmPassword) {
+      setErrors(prev => ({
+        ...prev,
+        confirmPassword: formData.password !== formData.confirmPassword 
+          ? "Passwords do not match" 
+          : ""
+      }));
+    }
+  }, [formData.password, formData.confirmPassword]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black to-purple-900/30 relative">

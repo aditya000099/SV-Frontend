@@ -59,7 +59,8 @@ export function Login() {
 
     try {
       await login(formData.email, formData.password);
-      navigate("/dashboard");
+      window.location.href = "/dashboard";
+      // navigate("/dashboard");
     } catch (err) {
       setErrors((prev) => ({
         ...prev,
