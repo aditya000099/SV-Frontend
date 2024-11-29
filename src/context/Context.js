@@ -26,65 +26,65 @@ const VideoCallProvider = ({ children }) => {
   const peerConnectionRef = useRef();
   const screenShareTrackRef = useRef();
 
-  useEffect(() => {
-    const getUserMediaStream = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        });
-        setUserStream(stream);
-        if (myVideoRef.current) {
-          myVideoRef.current.srcObject = stream;
-        }
-      } catch (error) {
-        console.error("Error accessing media devices:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const getUserMediaStream = async () => {
+  //     try {
+  //       const stream = await navigator.mediaDevices.getUserMedia({
+  //         video: true,
+  //         audio: true,
+  //       });
+  //       setUserStream(stream);
+  //       if (myVideoRef.current) {
+  //         myVideoRef.current.srcObject = stream;
+  //       }
+  //     } catch (error) {
+  //       console.error("Error accessing media devices:", error);
+  //     }
+  //   };
 
-    const handleSocketEvents = () => {
-      socket.on("socketId", (id) => {
-        setMyUserId(id);
-      });
+  //   const handleSocketEvents = () => {
+  //     socket.on("socketId", (id) => {
+  //       setMyUserId(id);
+  //     });
 
-      socket.on("mediaStatusChanged", ({ mediaType, isActive }) => {
-        if (isActive !== null) {
-          if (mediaType === "video") {
-            setIsPartnerVideoActive(isActive);
-          } else if (mediaType === "audio") {
-            setIsPartnerMicActive(isActive);
-          } else {
-            setIsPartnerMicActive(isActive[0]);
-            setIsPartnerVideoActive(isActive[1]);
-          }
-        }
-      });
+  //     socket.on("mediaStatusChanged", ({ mediaType, isActive }) => {
+  //       if (isActive !== null) {
+  //         if (mediaType === "video") {
+  //           setIsPartnerVideoActive(isActive);
+  //         } else if (mediaType === "audio") {
+  //           setIsPartnerMicActive(isActive);
+  //         } else {
+  //           setIsPartnerMicActive(isActive[0]);
+  //           setIsPartnerVideoActive(isActive[1]);
+  //         }
+  //       }
+  //     });
 
-      socket.on("callTerminated", () => {
-        setIsCallEnded(true);
-        window.location.reload();
-      });
+  //     socket.on("callTerminated", () => {
+  //       setIsCallEnded(true);
+  //       window.location.reload();
+  //     });
 
-      socket.on("incomingCall", ({ from, name, signal }) => {
-        setCall({ isReceivingCall: true, from, name, signal });
-      });
+  //     socket.on("incomingCall", ({ from, name, signal }) => {
+  //       setCall({ isReceivingCall: true, from, name, signal });
+  //     });
 
-      socket.on("receiveMessage", ({ message: text, senderName }) => {
-        const receivedMsg = { text, senderName };
-        setReceivedMessage(receivedMsg);
+  //     socket.on("receiveMessage", ({ message: text, senderName }) => {
+  //       const receivedMsg = { text, senderName };
+  //       setReceivedMessage(receivedMsg);
 
-        const timeout = setTimeout(() => {
-          setReceivedMessage({});
-        }, 1000);
+  //       const timeout = setTimeout(() => {
+  //         setReceivedMessage({});
+  //       }, 1000);
 
-        return () => clearTimeout(timeout);
-      });
-    };
+  //       return () => clearTimeout(timeout);
+  //     });
+  //   };
 
-    getUserMediaStream();
-    handleSocketEvents();
-  }, []);
-
+  //   getUserMediaStream();
+  //   handleSocketEvents();
+  // }, []);
+// uncomment for video and audio access
   const receiveCall = () => {
     setIsCallAccepted(true);
     setPartnerUserId(call.from);
