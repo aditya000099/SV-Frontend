@@ -1,304 +1,382 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
+import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 export function AiBot() {
   const { user } = useAuth();
-  const [currentGoal, setCurrentGoal] = useState(null);
-  const [isQuestioning, setIsQuestioning] = useState(false);
-  const [currentQuestion, setCurrentQuestion] = useState('');
-  const [userResponse, setUserResponse] = useState('');
-  const [responses, setResponses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [roadmap, setRoadmap] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [roadmaps, setRoadmaps] = useState([]);
+  const [formData, setFormData] = useState({
+    goal: '',
+    timeValue: '',
+    timeUnit: 'days'
+  });
+  const [minimizedRoadmaps, setMinimizedRoadmaps] = useState({});
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   useEffect(() => {
-    checkCurrentGoal();
+    fetchRoadmaps();
   }, []);
 
-  const checkCurrentGoal = async () => {
+  useEffect(() => {
+    if (roadmaps.length > 0) {
+      const initialMinimizedState = roadmaps.reduce((acc, roadmap) => ({
+        ...acc,
+        [roadmap._id]: true // true means minimized
+      }), {});
+      setMinimizedRoadmaps(initialMinimizedState);
+    }
+  }, [roadmaps]);
+
+  const fetchRoadmaps = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/goals/${user._id}`);
-      if (response.data) {
-        setCurrentGoal(JSON.parse(response.data.goal));
-      } else {
-        startQuestioning();
-      }
-      setLoading(false);
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/roadmap/${user._id}`
+      );
+      console.log('Roadmap data:', response.data);
+      setRoadmaps(Array.isArray(response.data) ? response.data : [response.data]);
     } catch (error) {
-      console.error('Error checking goal:', error);
-      toast.error('Failed to fetch user goal');
-      setLoading(false);
+      console.error('Error fetching roadmaps:', error);
+      toast.error('Failed to fetch roadmaps');
+      setRoadmaps([]);
     }
   };
 
-  const startQuestioning = async () => {
-    setIsQuestioning(true);
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/bot/question`, {
-        previousResponses: [],
-        userId: user._id
-      });
-      console.log('Initial question:', response.data);
-      setCurrentQuestion(response.data.question);
-    } catch (error) {
-      console.error('Error getting question:', error);
-      toast.error('Failed to start questionnaire');
-    }
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  const handleResponse = async (e) => {
+  const createRoadmap = async (e) => {
     e.preventDefault();
-    if (!userResponse.trim()) {
-      toast.error('Please provide a response!');
+    if (!formData.goal || !formData.timeValue) {
+      toast.error('Please fill in all fields');
       return;
     }
-  
-    const currentQA = {
-      question: currentQuestion,
-      answer: userResponse.trim(),
-    };
-  
-    const newResponses = [...responses, currentQA];
-    setResponses(newResponses);
-  
-    // Show thinking state
-    setCurrentQuestion('Thinking...');
-    setUserResponse('');
-  
+
+    setLoading(true);
     try {
-      // Send current conversation to the backend
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/bot/question`, {
-        previousResponses: newResponses,
+      const roadmapData = {
         userId: user._id,
-      });
-  
-      // Update based on AI's response
-      if (response.data.complete) {
-        toast.success('Generating your personalized roadmap...');
-        generateRoadmap(newResponses);
-      } else {
-        setCurrentQuestion(response.data.question);
-      }
-    } catch (error) {
-      console.error('Error in conversation:', error);
-      setCurrentQuestion('Something went wrong. Please try again.');
-      toast.error('Failed to process response');
-    }
-  };
-  
+        goal: formData.goal,
+        duration: `${formData.timeValue} ${formData.timeUnit}`
+      };
 
-  const generateRoadmap = async (allResponses) => {
-    try {
-      console.log('Generating roadmap with responses:', allResponses);
-
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/bot/generate-roadmap`, {
-        responses: allResponses,
-        userId: user._id
-      });
-
-      console.log('Roadmap generated:', response.data);
-
-      const roadmapData = response.data;
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/roadmap/generate`,
+        roadmapData
+      );
       
-      const saveResponse = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/goals`, {
-        userId: user._id,
-        goal: JSON.stringify(roadmapData),
-        isCompleted: false,
-        progress: 0
+      console.log('Created roadmap:', response.data);
+      toast.success('Roadmap created successfully!');
+      fetchRoadmaps();
+      
+      setFormData({
+        goal: '',
+        timeValue: '',
+        timeUnit: 'days'
       });
-
-      console.log('Goal saved:', saveResponse.data);
-
-      setRoadmap(roadmapData);
-      setIsQuestioning(false);
-      setCurrentGoal(roadmapData);
-      toast.success('Your learning roadmap is ready!');
     } catch (error) {
-      console.error('Error generating roadmap:', error);
-      toast.error('Failed to generate roadmap');
-      setIsQuestioning(false);
+      console.error('Error creating roadmap:', error);
+      toast.error('Failed to create roadmap');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Add function to update goal progress
-  const updateGoalProgress = async (progress) => {
-    try {
-      await axios.patch(`${process.env.REACT_APP_BACKEND_URL}/api/goals/${user._id}`, {
-        progress,
-        updatedAt: new Date()
-      });
-      toast.success('Progress updated');
-    } catch (error) {
-      console.error('Error updating progress:', error);
-      toast.error('Failed to update progress');
-    }
-  };
-
-  // Add function to mark goal as complete
-  const markGoalComplete = async () => {
-    try {
-      await axios.patch(`${process.env.REACT_APP_BACKEND_URL}/api/goals/${user._id}`, {
-        isCompleted: true,
-        progress: 100,
-        updatedAt: new Date()
-      });
-      toast.success('Goal marked as complete!');
-    } catch (error) {
-      console.error('Error completing goal:', error);
-      toast.error('Failed to complete goal');
-    }
-  };
-
-  if (loading) {
+  const renderPhase = (phase) => {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+      <div key={phase._id} className="bg-zinc-700 p-4 rounded-xl">
+        <h5 className="font-medium text-white mb-2">{phase.phase}</h5>
+        <p className="text-zinc-300 mb-3 text-sm">{phase.description}</p>
+        <p className="text-purple-400 text-sm mb-3">Duration: {phase.duration}</p>
+        <ul className="list-disc list-inside space-y-1 text-zinc-300">
+          {phase.tasks?.map((task, idx) => (
+            <li key={idx}>{task}</li>
+          ))}
+        </ul>
       </div>
     );
-  }
+  };
+
+  const renderResources = (resources) => {
+    if (!resources) return null;
+
+    return (
+      <div className="space-y-6">
+        {resources.videos?.length > 0 && (
+          <div>
+            <h4 className="font-medium text-white mb-2">Videos</h4>
+            <ul className="space-y-2">
+              {resources.videos.map((video, idx) => (
+                <li key={idx} className="flex items-center space-x-2">
+                  <span className="text-purple-400">{video.platform}</span>
+                  <span className="text-zinc-400">•</span>
+                  <a 
+                    href={video.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-purple-400 hover:text-purple-300 transition-colors"
+                  >
+                    {video.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        
+        {resources.courses?.length > 0 && (
+          <div>
+            <h4 className="font-medium text-white mb-2">Courses</h4>
+            <ul className="space-y-2">
+              {resources.courses.map((course, idx) => (
+                <li key={idx} className="flex items-center space-x-2">
+                  <span className="text-purple-400">{course.platform}</span>
+                  <span className="text-zinc-400">•</span>
+                  <a 
+                    href={course.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-purple-400 hover:text-purple-300 transition-colors"
+                  >
+                    {course.title}
+                  </a>
+                  {course.isPaid && (
+                    <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded">
+                      Paid
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {resources.books?.length > 0 && (
+          <div>
+            <h4 className="font-medium text-white mb-2">Books</h4>
+            <ul className="space-y-2">
+              {resources.books.map((book, idx) => (
+                <li key={idx}>
+                  <a 
+                    href={book.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-purple-400 hover:text-purple-300 transition-colors"
+                  >
+                    {book.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const toggleRoadmap = (roadmapId) => {
+    setMinimizedRoadmaps(prev => ({
+      ...prev,
+      [roadmapId]: !prev[roadmapId]
+    }));
+  };
+
+  const handleDelete = async (roadmapId) => {
+    try {
+      await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/roadmap/${roadmapId}`);
+      toast.success('Roadmap deleted successfully');
+      setDeleteConfirm(null);
+      fetchRoadmaps(); // Refresh the list
+    } catch (error) {
+      console.error('Error deleting roadmap:', error);
+      toast.error('Failed to delete roadmap');
+    }
+  };
 
   return (
-    <div className="min-h-screen relative">
-      {/* Main Content */}
-      {!isQuestioning && !currentGoal && (
-        <div className="container mx-auto px-4 py-8 mt-20">
-          <div className="max-w-2xl mx-auto">
-            <h1 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-              Let's Set Your Learning Goals
-            </h1>
-            <button
-              onClick={startQuestioning}
-              className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl text-white transition-all"
-            >
-              Start Goal Setting
-            </button>
-          </div>
-        </div>
-      )}
+    <div className="min-h-screen p-8 ">
+      <div className="max-w-4xl mx-auto mt-20">
+        {/* Form Section */}
+        <div className="mb-12">
+          <h1 className="text-3xl font-bold text-white mb-6">Create Your Learning Roadmap</h1>
+          
+          <form onSubmit={createRoadmap} className="bg-zinc-900 p-6 rounded-xl shadow-md space-y-4">
+            {/* Goal Input */}
+            <div>
+              <label htmlFor="goal" className="block text-sm font-medium text-zinc-300 mb-1">
+                What do you want to learn?
+              </label>
+              <input
+                type="text"
+                id="goal"
+                name="goal"
+                value={formData.goal}
+                onChange={handleInputChange}
+                placeholder="e.g., NextJS"
+                className="w-full px-4 py-2 bg-zinc-800 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-zinc-400"
+                disabled={loading}
+              />
+            </div>
 
-      {/* Questionnaire Overlay */}
-      <AnimatePresence>
-        {isQuestioning && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
-          >
-            <div className="max-w-xl w-full mx-4">
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="relative"
-              >
-                {/* Bot Image and Message Cloud */}
-                <div className="flex items-end mb-8">
-                  <img
-                    src="/bot.png"
-                    alt="AI Bot"
-                    className="w-24 h-24 object-contain"
-                  />
-                  <div className="ml-4 bg-white/10 backdrop-blur-md p-4 rounded-2xl rounded-bl-none max-w-md">
-                    <p className="text-white">{currentQuestion}</p>
+            {/* Time Input */}
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label htmlFor="timeValue" className="block text-sm font-medium text-zinc-300 mb-1">
+                  Time Duration
+                </label>
+                <input
+                  type="number"
+                  id="timeValue"
+                  name="timeValue"
+                  value={formData.timeValue}
+                  onChange={handleInputChange}
+                  min="1"
+                  placeholder="Enter number"
+                  className="w-full px-4 py-2 bg-zinc-800 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-zinc-400"
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="flex-1">
+                <label htmlFor="timeUnit" className="block text-sm font-medium text-zinc-300 mb-1">
+                  Unit
+                </label>
+                <select
+                  id="timeUnit"
+                  name="timeUnit"
+                  value={formData.timeUnit}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 bg-zinc-800 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white"
+                  disabled={loading}
+                >
+                  <option value="days">Days</option>
+                  <option value="months">Months</option>
+                </select>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 
+                       disabled:bg-purple-800 disabled:text-zinc-400 transition-colors"
+            >
+              {loading ? 'Creating...' : 'Generate Roadmap'}
+            </button>
+          </form>
+        </div>
+
+        {/* Roadmaps Display */}
+        <div className="space-y-8">
+          <h2 className="text-2xl font-semibold text-white mb-6">Your Roadmaps</h2>
+          
+          {Array.isArray(roadmaps) && roadmaps.map((roadmap, index) => (
+            <div 
+              key={roadmap._id || index}
+              className="bg-zinc-900 p-6 rounded-xl shadow-md space-y-6 relative"
+            >
+              {/* Header with controls */}
+              <div className="flex justify-between items-start">
+                <div className="border-b border-zinc-700 pb-4 flex-1">
+                  <h3 className="text-2xl font-semibold mb-2 text-white">Goal: {roadmap?.goal}</h3>
+                  <p className="text-zinc-400">Duration: {roadmap?.duration}</p>
+                </div>
+                <div className="flex items-center space-x-2 ml-4">
+                  <button
+                    onClick={() => toggleRoadmap(roadmap._id)}
+                    className="p-2 hover:bg-zinc-800 rounded-xl transition-colors"
+                    aria-label={minimizedRoadmaps[roadmap._id] ? "Expand" : "Minimize"}
+                  >
+                    {minimizedRoadmaps[roadmap._id] ? (
+                      <ChevronDownIcon className="w-5 h-5 text-zinc-400" />
+                    ) : (
+                      <ChevronUpIcon className="w-5 h-5 text-zinc-400" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => setDeleteConfirm(roadmap._id)}
+                    className="p-2 hover:bg-red-500/20 rounded-xl transition-colors"
+                    aria-label="Delete roadmap"
+                  >
+                    <TrashIcon className="w-5 h-5 text-red-400" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirmation Modal */}
+              {deleteConfirm === roadmap._id && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                  <div className="bg-zinc-800 p-6 rounded-xl max-w-md w-full mx-4 shadow-xl">
+                    <h4 className="text-xl font-semibold text-white mb-4">Confirm Deletion</h4>
+                    <p className="text-zinc-300 mb-6">
+                      Are you sure you want to delete this roadmap? This action cannot be undone.
+                    </p>
+                    <div className="flex justify-end space-x-4">
+                      <button
+                        onClick={() => setDeleteConfirm(null)}
+                        className="px-4 py-2 text-zinc-400 hover:text-white transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => handleDelete(roadmap._id)}
+                        className="px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
+              )}
 
-                {/* Response Input */}
-                <form onSubmit={handleResponse} className="flex gap-2">
-                  <input
-                    type="text"
-                    value={userResponse}
-                    onChange={(e) => setUserResponse(e.target.value)}
-                    className="flex-1 p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="Type your answer..."
-                  />
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-xl text-white"
-                  >
-                    Send
-                  </button>
-                </form>
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              {/* Collapsible Content */}
+              {!minimizedRoadmaps[roadmap._id] && (
+                <>
+                  {/* Learning Path */}
+                  {roadmap?.learningPath?.length > 0 && (
+                    <div>
+                      <h4 className="text-xl font-medium mb-4 text-white">Learning Path</h4>
+                      <div className="space-y-4">
+                        {roadmap.learningPath.map((phase) => renderPhase(phase))}
+                      </div>
+                    </div>
+                  )}
 
-      {/* Display Roadmap */}
-      {currentGoal && (
-        <div className="container mx-auto px-4 py-8 mt-20">
-          <div className="max-w-4xl mx-auto bg-white/5 backdrop-blur-md rounded-2xl p-8 border-1 border-white/10">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-4xl font-mwdium text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-                Your Learning Roadmap
-              </h2>
-              <div className="flex items-center gap-4">
-                <div className="text-white/70">
-                  Progress: {roadmap?.progress || 0}%
-                </div>
-                <button
-                  onClick={() => updateGoalProgress(Math.min((roadmap?.progress || 0) + 10, 100))}
-                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-xl text-white text-sm"
-                >
-                  Update Progress
-                </button>
-                {roadmap?.progress < 100 ? (
-                  <button
-                    onClick={() => markGoalComplete()}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-xl text-white text-sm"
-                  >
-                    Mark Complete
-                  </button>
-                ) : (
-                  <span className="px-4 py-2 bg-green-600/20 rounded-xl text-green-400 text-sm">
-                    Completed!
-                  </span>
-                )}
-              </div>
+                  {/* Resources */}
+                  {roadmap?.resources && (
+                    <div>
+                      <h4 className="text-xl font-medium mb-4 text-white">Learning Resources</h4>
+                      <div className="bg-zinc-800 p-4 rounded-xl">
+                        {renderResources(roadmap.resources)}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Creation Date */}
+                  {roadmap?.createdAt && (
+                    <div className="text-sm text-zinc-400 pt-4 border-t border-zinc-700">
+                      Created: {new Date(roadmap.createdAt).toLocaleDateString()}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-xl font-semibold mb-2 text-white/90">Main Goal</h3>
-                <p className="text-white/70">{currentGoal.mainGoal}</p>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2 text-white/90">Timeline</h3>
-                <p className="text-white/70">Expected Achievement: {currentGoal.timeline}</p>
-                <p className="text-white/70">Minimum Daily Time: {currentGoal.minimumTime}</p>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2 text-white/90">Milestones</h3>
-                <ul className="space-y-2">
-                  {currentGoal.milestones.map((milestone, index) => (
-                    <li key={index} className="flex items-center text-white/70">
-                      <span className="w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center mr-3">
-                        {index + 1}
-                      </span>
-                      {milestone}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold mb-2 text-white/90">Resources</h3>
-                <ul className="space-y-2">
-                  {currentGoal.resources.map((resource, index) => (
-                    <li key={index} className="text-purple-400 hover:text-purple-300">
-                      <a href={resource.url} target="_blank" rel="noopener noreferrer">
-                        {resource.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          ))}
+
+          {(!roadmaps || roadmaps.length === 0) && !loading && (
+            <div className="text-center py-8 text-zinc-400 bg-zinc-900 rounded-xl shadow-md">
+              No roadmaps found. Create one to get started!
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
