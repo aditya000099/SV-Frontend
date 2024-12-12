@@ -65,10 +65,25 @@ export function SignUp() {
     return validatePassword(password); // Your existing password validation
   };
 
+  const validateEmailWithTLD = (email) => {
+    // First check if it's a valid email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return "Please enter a valid email address";
+    }
+
+    // Check if the email ends with .com or .in
+    if (!email.endsWith('.com') && !email.endsWith('.in')) {
+      return "Only .com or .in email addresses are allowed";
+    }
+
+    return "";
+  };
+
   const validateForm = () => {
     const newErrors = {
       name: validateNameInput(formData.name),
-      email: validateEmail(formData.email),
+      email: validateEmailWithTLD(formData.email),
       password: validatePasswordInput(formData.password),
       confirmPassword:
         formData.password !== formData.confirmPassword
@@ -86,7 +101,7 @@ export function SignUp() {
       [name]: value,
     }));
 
-    // Real-time validation for name and password
+    // Real-time validation
     if (name === 'name') {
       const nameError = validateNameInput(value);
       setErrors(prev => ({
@@ -98,6 +113,12 @@ export function SignUp() {
       setErrors(prev => ({
         ...prev,
         password: passwordError
+      }));
+    } else if (name === 'email') {
+      const emailError = validateEmailWithTLD(value);
+      setErrors(prev => ({
+        ...prev,
+        email: emailError
       }));
     } else {
       // Clear error when user starts typing for other fields

@@ -69,12 +69,12 @@ export function Account() {
               <label className="text-gray-400">Bio</label>
               <p className="text-white text-lg">{profile.bio || 'No bio added'}</p>
             </div>
-            <button
+            {/* <button
               onClick={() => setIsEditing(true)}
               className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded"
             >
               Edit Profile
-            </button>
+            </button> */}
           </div>
         ) : (
           <div className="space-y-4">

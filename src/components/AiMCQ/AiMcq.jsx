@@ -7,6 +7,26 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 
+const scrollbarStyles = `
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+`;
+
 export default function MCQGenerator() {
   const { user } = useAuth();
   const [subject, setSubject] = useState("");
@@ -22,9 +42,21 @@ export default function MCQGenerator() {
   const [questionHistory, setQuestionHistory] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isFromHistory, setIsFromHistory] = useState(false);
+  const [canSave, setCanSave] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     fetchQuestionHistory();
+  }, []);
+
+  useEffect(() => {
+    const styleSheet = document.createElement("style");
+    styleSheet.innerText = scrollbarStyles;
+    document.head.appendChild(styleSheet);
+
+    return () => {
+      document.head.removeChild(styleSheet);
+    };
   }, []);
 
   const fetchQuestionHistory = async () => {{
@@ -55,9 +87,10 @@ export default function MCQGenerator() {
     const totalQuestions = mcqs.length;
     setProgress((attemptedCount / totalQuestions) * 100);
 
-    // Check if all questions are attempted
+    // Enable save button when all questions are attempted
     if (attemptedCount === totalQuestions && totalQuestions > 0) {
       calculateScore();
+      setCanSave(true);
     }
   };
 
@@ -68,16 +101,14 @@ export default function MCQGenerator() {
         correctCount++;
       }
     });
-    setScore((correctCount / mcqs.length) * 100);
+    const calculatedScore = (correctCount / mcqs.length) * 100;
+    setScore(calculatedScore);
     setShowScore(true);
-
-    // Only save if not from history
-    if (!isFromHistory) {
-      saveQuestionsToDb();
-    }
   };
 
-  const saveQuestionsToDb = async () => {
+  const handleSave = async () => {
+    if (!canSave || isSaved || isFromHistory) return;
+    
     try {
       const token = localStorage.getItem("token");
       const requestData = {
@@ -85,26 +116,25 @@ export default function MCQGenerator() {
         subject,
         subtopic,
         questions: JSON.stringify(mcqs),
-        score: (score / mcqs.length) * 100,
+        score: score, // Use the score directly
       };
-  
-      console.log("Data being sent:", requestData);  // Log the data before sending
-  
-      const response = await axios.post(
+
+      await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/api/mcqs/save`,
         requestData,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-  
-      console.log('Data saved successfully:', response.data);
-      fetchQuestionHistory(); // Refresh history after saving
+
+      setIsSaved(true);
+      toast.success("Questions saved successfully!");
+      fetchQuestionHistory();
     } catch (error) {
       console.error("Error saving questions:", error.response?.data || error.message);
+      toast.error("Failed to save questions");
     }
   };
-  
 
   useEffect(() => {
     calculateProgress();
@@ -115,6 +145,8 @@ export default function MCQGenerator() {
       setInitial(false);
       setLoading(true);
       setIsFromHistory(false); // Reset when fetching new MCQs
+      setCanSave(false); // Reset save button state
+      setIsSaved(false); // Reset saved state
       const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/mcqs`, {
         subject,
         subtopic,
@@ -214,7 +246,7 @@ export default function MCQGenerator() {
             initial={{ x: -300 }}
             animate={{ x: 0 }}
             exit={{ x: -300 }}
-            className="fixed left-0 top-20 h-screen w-72 bg-black/20 backdrop-blur-xl border-r border-white/10 p-6 overflow-y-auto z-50"
+            className="fixed left-0 top-20 h-screen w-72 bg-black/20 backdrop-blur-xl border-r border-white/10 p-6 overflow-y-auto z-50 custom-scrollbar"
           >
             <h2 className="text-xl font-semibold ml-12 mb-6 text-white/90">Question History</h2>
             {questionHistory.length > 0 ? (
@@ -417,6 +449,17 @@ export default function MCQGenerator() {
         )}
 
         <div className="mt-6 px-20">
+          {mcqs.length > 0 && canSave && !isFromHistory && !isSaved && (
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              onClick={handleSave}
+              className="fixed bottom-8 right-8 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-normal shadow-lg hover:from-purple-700 hover:to-pink-700 transition-all z-50"
+            >
+              Save Questions
+            </motion.button>
+          )}
+          
           {mcqs.map((mcq, index) => (
             <div
               key={index}

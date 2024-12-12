@@ -68,6 +68,8 @@ export function Dashboard() {
       setError("Room name cannot exceed three words.");
     } else if (!/^[\w]+(\s[\w]+)*$/.test(trimmedName)) {
       setError("Room name cannot contain empty spaces or special characters.");
+    } else if (name.length > 16) {
+      setError("Room name cannot exceed 16 characters.");
     } else {
       setError("");
     }
@@ -84,50 +86,56 @@ export function Dashboard() {
     const canvas = document.createElement("canvas");
     canvas.width = 1920;
     canvas.height = 1080;
-  
+
     const ctx = canvas.getContext("2d");
     const baseImage = new Image();
     baseImage.src = "/base.png"; // Path to your base image
-  
+
     return new Promise((resolve, reject) => {
       baseImage.onload = async () => {
         try {
           // Draw the base image
           ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
-  
+
           // Set font styles
           const words = roomName.split(" ");
           let fontSize = 24;
           if (roomName.length > 8) fontSize = 20;
-  
+
           ctx.font = `900 ${fontSize}rem 'Poppins'`;
           ctx.fillStyle = "white";
           ctx.textAlign = "center";
-  
+
           // Multi-line text handling
           if (words.length === 1) {
             ctx.fillText(roomName, canvas.width / 2, canvas.height / 2);
           } else {
-            const firstLine = words.slice(0, Math.ceil(words.length / 2)).join(" ");
-            const secondLine = words.slice(Math.ceil(words.length / 2)).join(" ");
+            const firstLine = words
+              .slice(0, Math.ceil(words.length / 2))
+              .join(" ");
+            const secondLine = words
+              .slice(Math.ceil(words.length / 2))
+              .join(" ");
             ctx.fillText(firstLine, canvas.width / 2, canvas.height / 2 - 100);
             ctx.font = `600 ${fontSize - 8}rem 'Poppins'`;
             ctx.fillText(secondLine, canvas.width / 2, canvas.height / 2 + 150);
           }
-  
+
           // Convert canvas to blob and upload
           const blob = await new Promise((resolveCanvas) =>
             canvas.toBlob(resolveCanvas, "image/jpeg", 0.9)
           );
-  
+
           // Appwrite file upload
-          const file = new File([blob], `${roomName}.jpg`, { type: "image/jpeg" });
+          const file = new File([blob], `${roomName}.jpg`, {
+            type: "image/jpeg",
+          });
           const response = await storage.createFile(
             "bp", // Replace with your Appwrite bucket ID
             "unique()", // Generates a unique ID
             file
           );
-  
+
           // Return the file's URL
           const imageUrl = `https://cloud.appwrite.io/v1/storage/buckets/bp/files/${response.$id}/view?project=igshops`;
           resolve(imageUrl);
@@ -136,11 +144,10 @@ export function Dashboard() {
           reject(error);
         }
       };
-  
+
       baseImage.onerror = () => reject(new Error("Base image failed to load"));
     });
   };
-  
 
   const generateImagePreview = (text) => {
     const canvas = document.createElement("canvas");
@@ -212,7 +219,9 @@ export function Dashboard() {
       {showModal && (
         <div className="fixed z-10 inset-0 flex items-center justify-center bg-gray-900 backdrop-blur-lg bg-opacity-50 transition-all duration-300">
           <div className="p-6 w-96 bg-gray-900 rounded-2xl backdrop-blur-lg bg-opacity-50 hover:bg-opacity-70 transition-all duration-300">
-            <h2 className="text-xl font-bold mb-4 text-white">Create New Room</h2>
+            <h2 className="text-xl font-bold mb-4 text-white">
+              Create New Room
+            </h2>
             <input
               type="text"
               value={roomName}
@@ -271,7 +280,9 @@ export function Dashboard() {
                       <h3 className="text-xl font-normal tracking-wide text-transparent bg-clip-text bg-gradient-to-tr from-zinc-400/50 to-white/60 via-white mb-2">
                         {room.name}
                       </h3>
-                      <p className="text-gray-400 mb-4">Created by: {room.creator.name}</p>
+                      <p className="text-gray-400 mb-4">
+                        Created by: {room.creator.name}
+                      </p>
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-500">
                           {room.participants.length} participants
