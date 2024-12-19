@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { socket } from "../../config/config";
@@ -8,6 +8,117 @@ import axios from "axios";
 import FormCard from "../FormCard/FormCard";
 import IncomingCall from "../IncomingCall/IncomingCall";
 import Video from "../Video/Video";
+import { Client, Storage } from "appwrite";
+import { FiPaperclip } from 'react-icons/fi';
+
+const appwriteClient = new Client();
+appwriteClient
+  .setEndpoint("https://cloud.appwrite.io/v1")
+  .setProject("igshops");
+const appwriteStorage = new Storage(appwriteClient);
+
+const UrlPreview = React.memo(({ url }) => {
+  const [preview, setPreview] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    
+    const getPreview = async () => {
+      try {
+        if (url.includes('appwrite.io')) {
+          const fileId = url.split('/files/')[1]?.split('/')[0];
+          if (!fileId) return;
+
+          const fileInfo = await appwriteStorage.getFile('bp', fileId);
+          const fileName = fileInfo.name;
+          
+          if (!mounted) return;
+
+          if (fileName.match(/\.(jpeg|jpg|gif|png)$/i)) {
+            setPreview({ type: 'image', url });
+          } else if (fileName.match(/\.(pdf|doc|docx)$/i)) {
+            setPreview({ 
+              type: 'file', 
+              url,
+              fileName 
+            });
+          }
+        } else if (url.match(/\.(jpeg|jpg|gif|png)$/i)) {
+          if (!mounted) return;
+          setPreview({ type: 'image', url });
+        } else if (url.match(/\.(pdf|doc|docx)$/i)) {
+          if (!mounted) return;
+          setPreview({ 
+            type: 'file', 
+            url,
+            fileName: url.split('/').pop() 
+          });
+        } else {
+          if (!mounted) return;
+          setPreview({ type: 'link', url });
+        }
+      } catch (error) {
+        console.error('Failed to get URL preview:', error);
+      }
+    };
+
+    getPreview();
+    
+    return () => {
+      mounted = false;
+    };
+  }, [url]);
+
+  if (!preview) return null;
+
+  switch (preview.type) {
+    case 'image':
+      return (
+        <div className="mt-2">
+          <a href={preview.url} target="_blank" rel="noopener noreferrer">
+            <img 
+              src={preview.url} 
+              alt="Preview" 
+              className="max-w-full h-auto rounded-xl max-h-48 object-contain hover:opacity-90 transition-opacity"
+            />
+          </a>
+        </div>
+      );
+    case 'file':
+      return (
+        <a 
+          href={preview.url} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="block mt-2 hover:bg-zinc-700 transition-colors"
+        >
+          <div className="flex items-center gap-2 bg-zinc-800 p-2 rounded-lg">
+            <FiPaperclip className="w-4 h-4" />
+            <span className="text-sm truncate">
+              {preview.fileName}
+            </span>
+          </div>
+        </a>
+      );
+    case 'link':
+      return (
+        <a 
+          href={preview.url} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="block mt-2 hover:bg-zinc-700 transition-colors"
+        >
+          <div className="bg-zinc-800 p-2 rounded-lg">
+            <span className="text-sm">
+              External Link
+            </span>
+          </div>
+        </a>
+      );
+    default:
+      return null;
+  }
+}, (prevProps, nextProps) => prevProps.url === nextProps.url);
 
 export function ChatRoom() {
   const { id } = useParams();
@@ -19,6 +130,7 @@ export function ChatRoom() {
   const messagesEndRef = useRef(null);
   const { callUser } = useContext(VideoCallContext);
   const navigate = useNavigate();
+  const [selectedFile, setSelectedFile] = useState(null);
 
   // Add this effect to check authentication
   useEffect(() => {
@@ -147,8 +259,58 @@ export function ChatRoom() {
     }
   };
 
+  const handleFileUpload = async (file) => {
+    try {
+      const response = await appwriteStorage.createFile(
+        "bp",
+        "unique()",
+        file
+      );
+
+      const fileUrl = `https://cloud.appwrite.io/v1/storage/buckets/bp/files/${response.$id}/view?project=igshops`;
+      
+      // Send the URL as a regular message
+      const token = localStorage.getItem("token");
+      const messageResponse = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/chatrooms/${id}/messages`,
+        { text: fileUrl },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const messageToAdd = {
+        _id: messageResponse.data._id,
+        text: fileUrl,
+        timestamp: new Date(),
+        sender: {
+          _id: user._id,
+          name: user.name,
+        },
+      };
+
+      setMessages((prev) => [...prev, messageToAdd]);
+
+      socket.emit("chatMessage", {
+        roomId: id,
+        messageData: messageToAdd,
+      });
+
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Failed to upload file:", error);
+    }
+  };
+
   const initiateVideoCall = (targetUserId) => {
     callUser(targetUserId);
+  };
+
+  const isValidUrl = (string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
   };
 
   if (isLoading) {
@@ -256,8 +418,12 @@ export function ChatRoom() {
                   <p className="text-sm text-gray-300 mb-1">
                     {message.sender?.name}
                   </p>
-                  <div className="flex flex-row gap-2 justify-center items-baseline">
-                    <p className="break-words">{message.text}</p>
+                  <div className="flex flex-col gap-2">
+                    {isValidUrl(message.text) ? (
+                      <UrlPreview url={message.text} />
+                    ) : (
+                      <p className="break-words">{message.text}</p>
+                    )}
                     <p className="text-xs">
                       {formatTimestamp(message.timestamp)}
                     </p>
@@ -287,6 +453,22 @@ export function ChatRoom() {
               className="flex-1 p-2 rounded-xl focus:border-none border-none bg-zinc-800"
               placeholder="Type a message..."
             />
+            <label className="cursor-pointer">
+              <input
+                type="file"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    handleFileUpload(file);
+                  }
+                }}
+                accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+              />
+              <div className="p-2 hover:bg-zinc-700 rounded-xl">
+                <FiPaperclip className="w-6 h-6" />
+              </div>
+            </label>
             <button
               type="submit"
               className="px-4 py-2 bg-primary-500 hover:bg-primary-600 rounded-xl"
