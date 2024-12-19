@@ -74,7 +74,8 @@ export function AuthProvider({ children }) {
         _id: user.id, // Make sure this matches with what backend sends
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        loginDates: user.loginDates
       });
       setIsAuthenticated(true);
       return true;

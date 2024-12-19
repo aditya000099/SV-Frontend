@@ -24,6 +24,7 @@ export function Dashboard() {
 
   useEffect(() => {
     fetchChatRooms();
+    trackUserLogin();
   }, []);
 
   const fetchChatRooms = async () => {
@@ -37,6 +38,21 @@ export function Dashboard() {
       console.error("Failed to fetch chatrooms:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const trackUserLogin = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/track-login`,
+        { userId: user._id },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+    } catch (error) {
+      console.error("Failed to track login:", error);
     }
   };
 
